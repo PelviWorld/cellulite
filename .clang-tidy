@@ -1,0 +1,44 @@
+Checks: "-*,
+        bugprone-*,
+        cert-*,
+        clang-*,
+        cppcoreguidelines-*,
+        -cppcoreguidelines-owning-memory,
+        google-*,
+        readability-*
+"
+WarningsAsErrors: ""
+HeaderFilterRegex: ""
+
+FormatStyle:     none
+CheckOptions:
+  - { key: cppcoreguidelines-explicit-virtual-functions.IgnoreDestructors, value: true  }
+
+  - { key: readability-identifier-length.IgnoredParameterNames,         value: '^([arcns]|id|ok)$'}
+  - { key: readability-identifier-length.IgnoredVariableNames,          value: '^(id|ok)$'        }
+  - { key: readability-identifier-length.IgnoredLoopCounterNames,       value: '^[ijkn]$'         }
+  - { key: readability-identifier-length.IgnoredExceptionVariblesNames, value: '^[e]$'            }
+
+  - { key: readability-identifier-naming.ClassCase,                  value: CamelCase   }
+  - { key: readability-identifier-naming.ClassMemberCase,            value: camelBack   }
+  - { key: readability-identifier-naming.ClassMethodCase,            value: camelBack   }
+  - { key: readability-identifier-naming.ConstexprVariableCase,      value: UPPER_CASE  }
+  - { key: readability-identifier-naming.EnumConstantCase,           value: UPPER_CASE  }
+  - { key: readability-identifier-naming.FunctionCase,               value: camelBack   }
+  - { key: readability-identifier-naming.GlobalConstantCase,         value: UPPER_CASE  }
+  - { key: readability-identifier-naming.MemberCase,                 value: camelBack   }
+  - { key: readability-identifier-naming.MemberConstantCase,         value: CamelCase   }
+  - { key: readability-identifier-naming.NamespaceCase,              value: lower_case  }
+  - { key: readability-identifier-naming.PrivateMemberCase,          value: camelBack   }
+  - { key: readability-identifier-naming.StaticConstantCase,         value: CamelCase   }
+  - { key: readability-identifier-naming.StructCase,                 value: CamelCase   }
+  - { key: readability-identifier-naming.TemplateParameterCase,      value: CamelCase   }
+  - { key: readability-identifier-naming.VariableCase,               value: camelBack   }
+
+  - { key: readability-identifier-naming.PrivateMemberPrefix,        value: m_          }
+  - { key: readability-identifier-naming.ProtectedMemberPrefix,      value: m_          }
+  - { key: readability-identifier-naming.ClassMemberPrefix,          value: m_          }
+  - { key: readability-identifier-naming.MemberConstantPrefix,       value: k           }
+  - { key: readability-identifier-naming.GlobalConstantPrefix,       value: k           }
+  - { key: readability-identifier-naming.ConstexprVariablePrefix,    value: k           }
+  - { key: readability-identifier-naming.StaticConstantPrefix,       value: k           }
