@@ -30,3 +30,11 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
         libmodbus::libmodbus)
+
+install(
+        TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
