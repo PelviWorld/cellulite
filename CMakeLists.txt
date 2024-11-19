@@ -8,7 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(VERSION_SRC cg_version.h.in)
 set(VERSION_DST cg_version.h)
 
-
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 endif ()
@@ -21,18 +20,21 @@ project(cellulitegui
         LANGUAGES CXX
 )
 
-find_package(libmodbus REQUIRED)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_executable(${PROJECT_NAME}
-        main.cpp
+        src/main.cpp
 )
 
-add_subdirectory(laingcontroller)
+add_subdirectory(controller)
 
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
-        libmodbus::libmodbus)
         laingcontroller::laingcontroller
+        INTERFACE
+        lainginterface::lainginterface
 )
 
 install(

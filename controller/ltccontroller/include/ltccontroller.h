@@ -1,14 +1,16 @@
 #pragma once
+#include "ilxccontroller.h"
+
 #include <memory>
 
 class MoveTecModBus;
 
-class LtcController
+class LtcController final : public ILxcController
 {
   public:
     explicit LtcController( const std::shared_ptr< MoveTecModBus >& modbus );
 
-    ~LtcController();
+    ~LtcController() override;
 
     LtcController( const LtcController& ) = delete;
 
@@ -18,9 +20,13 @@ class LtcController
 
     LtcController& operator=( LtcController&& ) = delete;
 
-    void moveToPosition( uint16_t pos ) const;
+    void moveToPosition( std::uint16_t pos ) const override;
 
   private:
     class Impl;
     std::unique_ptr< Impl > m_pImpl;
 };
+
+extern "C" {
+  std::unique_ptr< ILxcController > createController( const std::shared_ptr< MoveTecModBus >& modBus );
+}

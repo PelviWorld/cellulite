@@ -1,0 +1,6 @@
+#pragma once
+
+enum class LMC_REGISTER {
+ 	MOVEMENT_IN_PROGRESS = 0x0000,
+	KEYPRESS_CONTROL = 0x0001,
+};

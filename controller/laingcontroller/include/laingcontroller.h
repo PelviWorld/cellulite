@@ -1,14 +1,13 @@
 #pragma once
 #include <memory>
+#include "ilaingcontroller.h"
 
 class MoveTecModBus;
 
-class LaingController
+class LaingController final : public ILaingController
 {
   public:
-    explicit LaingController( const std::shared_ptr< MoveTecModBus >& modbus );
-
-    ~LaingController();
+    explicit LaingController( const std::string& device );
 
     LaingController( const LaingController& ) = delete;
 
@@ -17,6 +16,8 @@ class LaingController
     LaingController( LaingController&& ) = delete;
 
     LaingController& operator=( LaingController&& ) = delete;
+
+    ~LaingController() override;
 
   private:
     class Impl;

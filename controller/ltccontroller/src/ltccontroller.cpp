@@ -3,11 +3,16 @@
 
 #include <array>
 #include <ltcregister.h>
-#include <modbus.h>
 
 constexpr auto kMAX_USER_POSITIONS = 4;
 constexpr auto kUP = 5;
 constexpr auto kDOWN = 6;
+
+
+std::unique_ptr< ILxcController > createController( const std::shared_ptr< MoveTecModBus >& modBus )
+{
+  return std::make_unique< LtcController >( modBus );
+}
 
 class LtcController::Impl
 {
@@ -29,24 +34,24 @@ class LtcController::Impl
 
     bool moveInProgress() const
     {
-      std::array< uint16_t, 1 > value{ 0 };
-      modBus->readRegisters( static_cast< uint16_t >( LTC_REGISTER::MOVEMENT_IN_PROGRESS ), value );
+      std::array< std::uint16_t, 1 > value{ 0 };
+      modBus->readRegisters( static_cast< std::uint16_t >( LTC_REGISTER::MOVEMENT_IN_PROGRESS ), value );
       return value[ 0 ] == 1;
     }
 
     bool isMovementInProgress() const
     {
-      std::array< uint16_t, 1 > value{ 0 };
-      modBus->readRegisters( static_cast< uint16_t >( LTC_REGISTER::MOVEMENT_IN_PROGRESS ), value );
+      std::array< std::uint16_t, 1 > value{ 0 };
+      modBus->readRegisters( static_cast< std::uint16_t >( LTC_REGISTER::MOVEMENT_IN_PROGRESS ), value );
       return value[ 0 ] == 1;
     }
 
     void moveToPosition( const uint16_t pos ) const
     {
-      modBus->writeRegisters( static_cast< uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ), std::array{ pos } );
+      modBus->writeRegisters( static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ), std::array{ pos } );
       while(isMovementInProgress())
       {
-        modBus->writeRegisters( static_cast< uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ), std::array{ pos } );
+        modBus->writeRegisters( static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ), std::array{ pos } );
       }
       sleep( 2 );
     }
@@ -63,7 +68,7 @@ LtcController::~LtcController()
 {
 }
 
-void LtcController::moveToPosition( const uint16_t pos ) const
+void LtcController::moveToPosition( const std::uint16_t pos ) const
 {
   if(pos <= kMAX_USER_POSITIONS)
   {
