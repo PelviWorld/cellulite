@@ -4,12 +4,12 @@ set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES
         "${CMAKE_SOURCE_DIR}/cmake/conan_provider.cmake"
 )
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED  ON)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(VERSION_SRC cg_version.h.in)
 set(VERSION_DST cg_version.h)
 
 
-if(NOT CMAKE_BUILD_TYPE)
+if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 endif ()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
@@ -27,9 +27,13 @@ add_executable(${PROJECT_NAME}
         main.cpp
 )
 
+add_subdirectory(laingcontroller)
+
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
         libmodbus::libmodbus)
+        laingcontroller::laingcontroller
+)
 
 install(
         TARGETS ${PROJECT_NAME}
