@@ -3,11 +3,11 @@
 
 #include <array>
 #include <ltcregister.h>
+#include <thread>
 
 constexpr auto kMAX_USER_POSITIONS = 4;
 constexpr auto kUP = 5;
 constexpr auto kDOWN = 6;
-
 
 std::unique_ptr< ILxcController > createController( const std::shared_ptr< MoveTecModBus >& modBus )
 {
@@ -41,19 +41,22 @@ class LtcController::Impl
 
     bool isMovementInProgress() const
     {
-      std::array< std::uint16_t, 1 > value{ 0 };
-      modBus->readRegisters( static_cast< std::uint16_t >( LTC_REGISTER::MOVEMENT_IN_PROGRESS ), value );
-      return value[ 0 ] == 1;
+      constexpr auto kREGISTERS = 40;
+      constexpr auto kPOLL_REGISTER = 10000;
+      constexpr auto kMOTOR_ONE_PWR = 14;
+      std::array< std::uint16_t, kREGISTERS > value{ 0 };
+      modBus->readRegisters( kPOLL_REGISTER, value );
+      return value[ kMOTOR_ONE_PWR ] != 0;
     }
 
     void moveToPosition( const uint16_t pos ) const
     {
       modBus->writeRegisters( static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ), std::array{ pos } );
+      std::this_thread::sleep_for( std::chrono::milliseconds( 150 ) );
       while(isMovementInProgress())
       {
-        modBus->writeRegisters( static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ), std::array{ pos } );
       }
-      sleep( 2 );
+      std::this_thread::sleep_for( std::chrono::milliseconds( 1500 ) );
     }
 
     const std::shared_ptr< MoveTecModBus > modBus;
