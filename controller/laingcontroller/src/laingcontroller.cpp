@@ -134,3 +134,8 @@ LaingController::LaingController( const std::string& device )
 }
 
 LaingController::~LaingController() = default;
+
+void LaingController::moveToPosition( const std::uint16_t pos ) const
+{
+  m_pImpl->lxcController->moveToPosition( pos );
+}

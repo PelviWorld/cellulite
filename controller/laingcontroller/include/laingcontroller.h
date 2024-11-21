@@ -19,6 +19,8 @@ class LaingController final : public ILaingController
 
     ~LaingController() override;
 
+    void moveToPosition( std::uint16_t pos ) const;
+
   private:
     class Impl;
     std::unique_ptr< Impl > m_pImpl;
