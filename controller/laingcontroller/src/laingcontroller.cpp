@@ -133,6 +133,11 @@ LaingController::LaingController( const std::string& device )
 {
 }
 
+std::uint16_t LaingController::getTableHeight() const
+{
+  return m_pImpl->lxcController->getTableHeight();
+}
+
 LaingController::~LaingController() = default;
 
 void LaingController::moveToUserPosition( const USER_POSITION pos ) const

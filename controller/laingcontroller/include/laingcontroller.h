@@ -20,6 +20,8 @@ class LaingController final : public ILaingController
 
     ~LaingController() override;
 
+    std::uint16_t getTableHeight() const;
+
     void moveToUserPosition( USER_POSITION pos ) const;
 
     void referenceRun() const;

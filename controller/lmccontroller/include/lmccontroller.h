@@ -24,6 +24,8 @@ class LmcController final : public ILxcController
 
     void referenceRun() const override;
 
+    uint16_t getTableHeight() const override;
+
   private:
     class Impl;
     std::unique_ptr< Impl > m_pImpl;

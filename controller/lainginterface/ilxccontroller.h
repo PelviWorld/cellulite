@@ -23,6 +23,8 @@ class ILxcController
 
     ILxcController& operator=( ILxcController&& ) = delete;
 
+    virtual uint16_t getTableHeight() const = 0;
+
     virtual void moveToUserPosition( USER_POSITION pos ) const = 0;
 
     virtual void referenceRun() const = 0;

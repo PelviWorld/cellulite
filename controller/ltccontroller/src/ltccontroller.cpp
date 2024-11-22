@@ -83,6 +83,13 @@ class LtcController::Impl
       modBus->readRegisters( static_cast< std::uint16_t >( LTC_REGISTER::SYSTEM_MODE ), value );
     }
 
+    uint16_t getTableHeight() const
+    {
+      std::array< uint16_t, 1 > value{ 0 };
+      modBus->readRegisters( static_cast< uint16_t >( LTC_REGISTER::TABLE_HEIGHT ), value );
+      return value[ 0 ];
+    }
+
     const std::shared_ptr< MoveTecModBus > modBus;
 };
 
@@ -103,4 +110,9 @@ void LtcController::moveToUserPosition( const USER_POSITION pos ) const
 void LtcController::referenceRun() const
 {
   m_pImpl->referenceRun();
+}
+
+uint16_t LtcController::getTableHeight() const
+{
+  return m_pImpl->getTableHeight();
 }
