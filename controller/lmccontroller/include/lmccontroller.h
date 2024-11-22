@@ -20,11 +20,11 @@ class LmcController final : public ILxcController
 
     LmcController& operator=( LmcController&& ) = delete;
 
-    void moveToUserPosition( USER_POSITION pos ) const override;
+    void moveToUserPosition( AXIS axis, USER_POSITION pos ) const override;
 
-    void referenceRun() const override;
+    void referenceRun( AXIS axis ) const override;
 
-    uint16_t getTableHeight() const override;
+    uint16_t getTableHeight( AXIS axis ) const override;
 
   private:
     class Impl;

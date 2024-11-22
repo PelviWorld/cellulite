@@ -66,3 +66,10 @@ enum class USER_POSITION {
     POS_3 = 3,
     POS_4 = 4
 };
+
+enum class AXIS {
+    ONE = 1,
+    TWO = 2,
+    THREE = 3,
+    FOUR = 4,
+};

@@ -1,9 +1,7 @@
 #include "lmccontroller.h"
 #include "movetecmodbus.h"
 #include "lmcregister.h"
-#include "../../../../../.conan2/p/b/libmo8c03e1b728177/p/include/modbus/modbus.h"
-
-#include <array>
+#include "laingvalue.h"
 
 constexpr auto kMAX_USER_POSITIONS = 4;
 constexpr auto kUP = 5;
@@ -32,39 +30,27 @@ class LmcController::Impl
 
     Impl& operator=( Impl&& ) = delete;
 
-    bool moveInProgress() const
+    static uint16_t getChannelRegisterOffset( LMC_REGISTER address, AXIS axis, const uint16_t baseOffset = 80 )
     {
-      std::array< std::uint16_t, 1 > value{ 0 };
-      modBus->readRegisters( static_cast< std::uint16_t >( LMC_REGISTER::MOVEMENT_IN_PROGRESS ), value );
-      return value[ 0 ] == 1;
+      return static_cast< uint16_t >( address ) + ( baseOffset * ( static_cast< uint16_t >( axis ) - 1 ) );
     }
 
     bool isMovementInProgress() const
     {
-      std::array< std::uint16_t, 1 > value{ 0 };
-      modBus->readRegisters( static_cast< std::uint16_t >( LMC_REGISTER::MOVEMENT_IN_PROGRESS ), value );
-      return value[ 0 ] == 1;
+      return true;
     }
 
-    void moveToPosition( const USER_POSITION pos ) const
-    {
-      modBus->writeRegisters( static_cast< std::uint16_t >( LMC_REGISTER::KEYPRESS_CONTROL ),
-        std::array{ static_cast< uint16_t >( pos ) } );
-      while(isMovementInProgress())
-      {
-      }
-      sleep( 2 );
-    }
-
-    void referenceRun()
+    void moveToPosition( const AXIS axis, const USER_POSITION pos ) const
     {
     }
 
-    uint16_t getTableHeight()
+    void referenceRun( AXIS axis ) const
     {
-      std::array< uint16_t, 1 > value{ 0 };
-      modBus->readRegisters( static_cast< uint16_t >( LMC_REGISTER::MOVEMENT_IN_PROGRESS ), value );
-      return value[ 0 ];
+    }
+
+    uint16_t getTableHeight( AXIS axis ) const
+    {
+      return 0;
     }
 
 
@@ -80,17 +66,17 @@ LmcController::~LmcController()
 {
 }
 
-void LmcController::moveToUserPosition( USER_POSITION pos ) const
+void LmcController::moveToUserPosition( const AXIS axis, const USER_POSITION pos ) const
 {
-  m_pImpl->moveToPosition( pos );
+  m_pImpl->moveToPosition( axis, pos );
 }
 
-void LmcController::referenceRun() const
+void LmcController::referenceRun( const AXIS axis ) const
 {
-  m_pImpl->referenceRun();
+  m_pImpl->referenceRun( axis );
 }
 
-uint16_t LmcController::getTableHeight() const
+uint16_t LmcController::getTableHeight( const AXIS axis ) const
 {
-  return m_pImpl->getTableHeight();
+  return m_pImpl->getTableHeight( axis );
 }

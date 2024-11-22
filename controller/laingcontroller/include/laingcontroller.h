@@ -20,11 +20,11 @@ class LaingController final : public ILaingController
 
     ~LaingController() override;
 
-    std::uint16_t getTableHeight() const;
+    std::uint16_t getTableHeight( AXIS axis ) const override;
 
-    void moveToUserPosition( USER_POSITION pos ) const;
+    void moveToUserPosition( AXIS axis, USER_POSITION pos ) const override;
 
-    void referenceRun() const;
+    void referenceRun( AXIS axis ) const override;
 
   private:
     class Impl;

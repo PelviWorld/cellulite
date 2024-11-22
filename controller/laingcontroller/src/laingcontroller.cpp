@@ -36,7 +36,9 @@ class LaingController::Impl
 
     void readBasicData()
     {
-      std::this_thread::sleep_for( std::chrono::milliseconds( 3 * kREGISTER_TIMEOUT ) );
+      std::array< std::uint16_t, 1 > temp{ 0 };
+      modBus->readRegisters( static_cast< std::uint16_t >( LAING_REGISTER::VALIDITY ), temp );
+      std::this_thread::sleep_for( std::chrono::milliseconds( kREGISTER_TIMEOUT ) );
       readRegister( LAING_REGISTER::VALIDITY, validity );
       readRegister( LAING_REGISTER::WHO_AM_I, whoAmI );
       readRegister( LAING_REGISTER::FIRMWARE_VERSION, firmwareVersion );
@@ -87,7 +89,7 @@ class LaingController::Impl
         std::cerr << "Failed to load " << func << ": " << dlerror() << std::endl;
         return;
       }
-      auto createController = reinterpret_cast // NOLINT(*-pro-type-reinterpret-cast)
+      const auto createController = reinterpret_cast // NOLINT(*-pro-type-reinterpret-cast)
         < std::unique_ptr< ILxcController > ( * )( const std::shared_ptr< MoveTecModBus >& ) >( pcreate );
       lxcController = createController( modBus );
     }
@@ -138,19 +140,19 @@ LaingController::LaingController( const std::string& device )
 {
 }
 
-std::uint16_t LaingController::getTableHeight() const
+std::uint16_t LaingController::getTableHeight( AXIS axis ) const
 {
-  return m_pImpl->lxcController->getTableHeight();
+  return m_pImpl->lxcController->getTableHeight( axis );
 }
 
 LaingController::~LaingController() = default;
 
-void LaingController::moveToUserPosition( const USER_POSITION pos ) const
+void LaingController::moveToUserPosition( AXIS axis, const USER_POSITION pos ) const
 {
-  m_pImpl->lxcController->moveToUserPosition( pos );
+  m_pImpl->lxcController->moveToUserPosition( axis, pos );
 }
 
-void LaingController::referenceRun() const
+void LaingController::referenceRun( AXIS axis ) const
 {
-  m_pImpl->lxcController->referenceRun();
+  m_pImpl->lxcController->referenceRun( axis );
 }

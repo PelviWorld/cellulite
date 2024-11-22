@@ -36,13 +36,6 @@ class LtcController::Impl
 
     Impl& operator=( Impl&& ) = delete;
 
-    bool moveInProgress() const
-    {
-      std::array< std::uint16_t, 1 > value{ 0 };
-      modBus->readRegisters( static_cast< std::uint16_t >( LTC_REGISTER::MOVEMENT_IN_PROGRESS ), value );
-      return value[ 0 ] == 1;
-    }
-
     bool isMovementInProgress() const
     {
       constexpr auto kREGISTERS = 40;
@@ -102,17 +95,17 @@ LtcController::~LtcController()
 {
 }
 
-void LtcController::moveToUserPosition( const USER_POSITION pos ) const
+void LtcController::moveToUserPosition( AXIS /*axis*/, const USER_POSITION pos ) const
 {
   m_pImpl->moveToPosition( pos );
 }
 
-void LtcController::referenceRun() const
+void LtcController::referenceRun( AXIS /*axis*/ ) const
 {
   m_pImpl->referenceRun();
 }
 
-uint16_t LtcController::getTableHeight() const
+uint16_t LtcController::getTableHeight( AXIS /*axis*/ ) const
 {
   return m_pImpl->getTableHeight();
 }
