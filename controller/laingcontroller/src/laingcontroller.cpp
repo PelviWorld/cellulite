@@ -9,6 +9,11 @@
 #include <iostream>
 #include <thread>
 
+namespace
+{
+  constexpr auto kREGISTER_TIMEOUT = 50;
+}
+
 class LaingController::Impl
 {
   public:
@@ -31,6 +36,7 @@ class LaingController::Impl
 
     void readBasicData()
     {
+      std::this_thread::sleep_for( std::chrono::milliseconds( 3 * kREGISTER_TIMEOUT ) );
       readRegister( LAING_REGISTER::VALIDITY, validity );
       readRegister( LAING_REGISTER::WHO_AM_I, whoAmI );
       readRegister( LAING_REGISTER::FIRMWARE_VERSION, firmwareVersion );
@@ -89,7 +95,6 @@ class LaingController::Impl
 
     void readRegister( const LAING_REGISTER address, std::uint16_t& value ) const
     {
-      constexpr auto kREGISTER_TIMEOUT = 50;
       if(std::array< std::uint16_t, 1 > temp{ 0 }; modBus->readRegisters( static_cast< std::uint16_t >( address ),
         temp ))
       {
