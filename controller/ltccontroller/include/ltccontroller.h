@@ -20,7 +20,7 @@ class LtcController final : public ILxcController
 
     LtcController& operator=( LtcController&& ) = delete;
 
-    void moveToPosition( std::uint16_t pos ) const override;
+    void moveToUserPosition( std::uint16_t pos ) const override;
 
   private:
     class Impl;
@@ -28,5 +28,5 @@ class LtcController final : public ILxcController
 };
 
 extern "C" {
-  std::unique_ptr< ILxcController > createController( const std::shared_ptr< MoveTecModBus >& modBus );
+std::unique_ptr< ILxcController > createController( const std::shared_ptr< MoveTecModBus >& modBus );
 }

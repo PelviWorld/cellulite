@@ -75,7 +75,7 @@ LtcController::~LtcController()
 {
 }
 
-void LtcController::moveToPosition( const std::uint16_t pos ) const
+void LtcController::moveToUserPosition( const std::uint16_t pos ) const
 {
   if(pos <= kMAX_USER_POSITIONS)
   {

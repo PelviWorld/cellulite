@@ -22,5 +22,5 @@ class ILxcController
 
     ILxcController& operator=( ILxcController&& ) = delete;
 
-    virtual void moveToPosition( std::uint16_t pos ) const = 0;
+    virtual void moveToUserPosition( std::uint16_t pos ) const = 0;
 };

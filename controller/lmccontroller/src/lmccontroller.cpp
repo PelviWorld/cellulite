@@ -67,7 +67,7 @@ LmcController::~LmcController()
 {
 }
 
-void LmcController::moveToPosition( const std::uint16_t pos ) const
+void LmcController::moveToUserPosition( const std::uint16_t pos ) const
 {
   if(pos <= kMAX_USER_POSITIONS)
   {
