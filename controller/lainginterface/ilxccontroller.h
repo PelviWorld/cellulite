@@ -1,5 +1,6 @@
 #pragma once
 
+#include <laingvalue.h>
 #include <memory>
 class MoveTecModBus;
 
@@ -22,5 +23,5 @@ class ILxcController
 
     ILxcController& operator=( ILxcController&& ) = delete;
 
-    virtual void moveToUserPosition( std::uint16_t pos ) const = 0;
+    virtual void moveToUserPosition( USER_POSITION pos ) const = 0;
 };

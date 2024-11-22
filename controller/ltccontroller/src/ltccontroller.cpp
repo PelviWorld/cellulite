@@ -50,11 +50,12 @@ class LtcController::Impl
       return movement[ 0 ] == static_cast< std::uint16_t >( SYSTEM_STATE::MOVE );
     }
 
-    void moveToPosition( const uint16_t pos ) const
+    void moveToPosition( const USER_POSITION pos ) const
     {
       constexpr auto kPOLLING_INTERVAL = 100;
       constexpr auto kMOVEMENT_TIMEOUT = 1500;
-      modBus->writeRegisters( static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ), std::array{ pos } );
+      modBus->writeRegisters( static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ),
+        std::array{ static_cast< uint16_t >( pos ) } );
       std::this_thread::sleep_for( std::chrono::milliseconds( kPOLLING_INTERVAL ) );
       while(isMovementInProgress())
       {
@@ -75,10 +76,7 @@ LtcController::~LtcController()
 {
 }
 
-void LtcController::moveToUserPosition( const std::uint16_t pos ) const
+void LtcController::moveToUserPosition( USER_POSITION pos ) const
 {
-  if(pos <= kMAX_USER_POSITIONS)
-  {
-    m_pImpl->moveToPosition( pos );
-  }
+  m_pImpl->moveToPosition( pos );
 }

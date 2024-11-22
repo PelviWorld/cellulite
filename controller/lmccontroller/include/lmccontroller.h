@@ -20,7 +20,7 @@ class LmcController final : public ILxcController
 
     LmcController& operator=( LmcController&& ) = delete;
 
-    void moveToUserPosition( std::uint16_t pos ) const override;
+    void moveToUserPosition( USER_POSITION pos ) const override;
 
   private:
     class Impl;

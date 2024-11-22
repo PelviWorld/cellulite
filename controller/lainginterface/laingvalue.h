@@ -58,3 +58,10 @@ enum class REFERENCE_MODE_STATE {
     RM_FINAL_POSITION_RUN = 3,
     RM_REACHED = 4,
 };
+
+enum class USER_POSITION {
+    POS_1 = 1,
+    POS_2 = 2,
+    POS_3 = 3,
+    POS_4 = 4
+};

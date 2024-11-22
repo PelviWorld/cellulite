@@ -45,12 +45,12 @@ class LmcController::Impl
       return value[ 0 ] == 1;
     }
 
-    void moveToPosition( const uint16_t pos ) const
+    void moveToPosition( const USER_POSITION pos ) const
     {
-      modBus->writeRegisters( static_cast< std::uint16_t >( LMC_REGISTER::KEYPRESS_CONTROL ), std::array{ pos } );
+      modBus->writeRegisters( static_cast< std::uint16_t >( LMC_REGISTER::KEYPRESS_CONTROL ),
+        std::array{ static_cast< uint16_t >( pos ) } );
       while(isMovementInProgress())
       {
-        modBus->writeRegisters( static_cast< std::uint16_t >( LMC_REGISTER::KEYPRESS_CONTROL ), std::array{ pos } );
       }
       sleep( 2 );
     }
@@ -67,10 +67,7 @@ LmcController::~LmcController()
 {
 }
 
-void LmcController::moveToUserPosition( const std::uint16_t pos ) const
+void LmcController::moveToUserPosition( USER_POSITION pos ) const
 {
-  if(pos <= kMAX_USER_POSITIONS)
-  {
-    m_pImpl->moveToPosition( pos );
-  }
+  m_pImpl->moveToPosition( pos );
 }

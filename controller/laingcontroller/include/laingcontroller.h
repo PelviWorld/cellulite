@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "ilaingcontroller.h"
+#include <laingvalue.h>
 
 class MoveTecModBus;
 
@@ -19,7 +20,7 @@ class LaingController final : public ILaingController
 
     ~LaingController() override;
 
-    void moveToUserPosition( std::uint16_t pos ) const;
+    void moveToUserPosition( USER_POSITION pos ) const;
 
   private:
     class Impl;
