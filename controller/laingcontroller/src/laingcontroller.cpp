@@ -139,3 +139,8 @@ void LaingController::moveToUserPosition( const USER_POSITION pos ) const
 {
   m_pImpl->lxcController->moveToUserPosition( pos );
 }
+
+void LaingController::referenceRun() const
+{
+  m_pImpl->lxcController->referenceRun();
+}

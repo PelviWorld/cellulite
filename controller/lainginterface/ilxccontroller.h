@@ -24,4 +24,6 @@ class ILxcController
     ILxcController& operator=( ILxcController&& ) = delete;
 
     virtual void moveToUserPosition( USER_POSITION pos ) const = 0;
+
+    virtual void referenceRun() const = 0;
 };

@@ -6,9 +6,12 @@
 #include <laingvalue.h>
 #include <thread>
 
-constexpr auto kMAX_USER_POSITIONS = 4;
-constexpr auto kUP = 5;
-constexpr auto kDOWN = 6;
+namespace
+{
+  constexpr auto kDOWN = 6;
+  constexpr auto kPOLLING_INTERVAL = 100;
+  constexpr auto kMOVEMENT_TIMEOUT = 1500;
+}
 
 std::unique_ptr< ILxcController > createController( const std::shared_ptr< MoveTecModBus >& modBus )
 {
@@ -52,8 +55,6 @@ class LtcController::Impl
 
     void moveToPosition( const USER_POSITION pos ) const
     {
-      constexpr auto kPOLLING_INTERVAL = 100;
-      constexpr auto kMOVEMENT_TIMEOUT = 1500;
       modBus->writeRegisters( static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ),
         std::array{ static_cast< uint16_t >( pos ) } );
       std::this_thread::sleep_for( std::chrono::milliseconds( kPOLLING_INTERVAL ) );
@@ -62,6 +63,24 @@ class LtcController::Impl
         std::this_thread::sleep_for( std::chrono::milliseconds( kPOLLING_INTERVAL ) );
       }
       std::this_thread::sleep_for( std::chrono::milliseconds( kMOVEMENT_TIMEOUT ) );
+    }
+
+    void referenceRun() const
+    {
+      std::array< std::uint16_t, 1 > value{ kDOWN };
+      modBus->writeRegister( static_cast< uint16_t >( LTC_REGISTER::SYSTEM_MODE ),
+        static_cast< std::uint16_t >( SYSTEM_MODE::CLEAR ) );
+      modBus->writeRegister( static_cast< uint16_t >( LTC_REGISTER::SYSTEM_MODE ),
+        static_cast< std::uint16_t >( SYSTEM_MODE::REFERENCE ) );
+      modBus->writeRegisters( static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ),
+        value );
+      std::this_thread::sleep_for( std::chrono::milliseconds( kPOLLING_INTERVAL ) );
+      while(isMovementInProgress())
+      {
+        std::this_thread::sleep_for( std::chrono::milliseconds( kPOLLING_INTERVAL ) );
+      }
+      std::this_thread::sleep_for( std::chrono::milliseconds( kMOVEMENT_TIMEOUT ) );
+      modBus->readRegisters( static_cast< std::uint16_t >( LTC_REGISTER::SYSTEM_MODE ), value );
     }
 
     const std::shared_ptr< MoveTecModBus > modBus;
@@ -76,7 +95,12 @@ LtcController::~LtcController()
 {
 }
 
-void LtcController::moveToUserPosition( USER_POSITION pos ) const
+void LtcController::moveToUserPosition( const USER_POSITION pos ) const
 {
   m_pImpl->moveToPosition( pos );
+}
+
+void LtcController::referenceRun() const
+{
+  m_pImpl->referenceRun();
 }

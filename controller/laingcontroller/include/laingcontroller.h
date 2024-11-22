@@ -22,6 +22,8 @@ class LaingController final : public ILaingController
 
     void moveToUserPosition( USER_POSITION pos ) const;
 
+    void referenceRun() const;
+
   private:
     class Impl;
     std::unique_ptr< Impl > m_pImpl;

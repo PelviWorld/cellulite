@@ -7,12 +7,13 @@ enum class SYSTEM_STATE {
 };
 
 enum class SYSTEM_MODE {
-    PWM_TEST_MODE = 3,
-    CURRENT_TEST_MODE = 4,
-    SPEED_TEST_MODE = 5,
-    LONG_TERM_TEST_MODE = 6,
-    REFERENCE_MODE = 7,
-    NORMAL_MODE = 8
+    CLEAR = 0,
+    PWM_TEST = 3,
+    CURRENT_TEST = 4,
+    SPEED_TEST = 5,
+    LONG_TERM_TEST = 6,
+    REFERENCE = 7,
+    NORMAL = 8
 };
 
 enum class ERROR_CODE {

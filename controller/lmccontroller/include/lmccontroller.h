@@ -22,6 +22,8 @@ class LmcController final : public ILxcController
 
     void moveToUserPosition( USER_POSITION pos ) const override;
 
+    void referenceRun() const override;
+
   private:
     class Impl;
     std::unique_ptr< Impl > m_pImpl;

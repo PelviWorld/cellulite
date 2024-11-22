@@ -3,6 +3,7 @@
 #include "lmcregister.h"
 
 #include <array>
+#include <iostream>
 
 constexpr auto kMAX_USER_POSITIONS = 4;
 constexpr auto kUP = 5;
@@ -55,6 +56,12 @@ class LmcController::Impl
       sleep( 2 );
     }
 
+    void referenceRun()
+    {
+      std::cout << "Reference run" << std::endl;
+    }
+
+
     const std::shared_ptr< MoveTecModBus > modBus;
 };
 
@@ -70,4 +77,9 @@ LmcController::~LmcController()
 void LmcController::moveToUserPosition( USER_POSITION pos ) const
 {
   m_pImpl->moveToPosition( pos );
+}
+
+void LmcController::referenceRun() const
+{
+  m_pImpl->referenceRun();
 }
