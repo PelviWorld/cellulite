@@ -3,6 +3,7 @@
 
 #include <array>
 #include <ltcregister.h>
+#include <laingvalue.h>
 #include <thread>
 
 constexpr auto kMAX_USER_POSITIONS = 4;
@@ -42,21 +43,24 @@ class LtcController::Impl
     bool isMovementInProgress() const
     {
       constexpr auto kREGISTERS = 40;
-      constexpr auto kPOLL_REGISTER = 10000;
-      constexpr auto kMOTOR_ONE_PWR = 14;
       std::array< std::uint16_t, kREGISTERS > value{ 0 };
-      modBus->readRegisters( kPOLL_REGISTER, value );
-      return value[ kMOTOR_ONE_PWR ] != 0;
+      modBus->readRegisters( static_cast< uint16_t >( LTC_REGISTER::GUI_SUPPORT_REGISTERS_START ), value );
+      std::array< std::uint16_t, 1 > movement{ 0 };
+      modBus->readRegisters( static_cast< std::uint16_t >( LTC_REGISTER::MOVEMENT_IN_PROGRESS ), movement );
+      return movement[ 0 ] == static_cast< std::uint16_t >( SYSTEM_STATE::MOVE );
     }
 
     void moveToPosition( const uint16_t pos ) const
     {
+      constexpr auto kPOLLING_INTERVAL = 100;
+      constexpr auto kMOVEMENT_TIMEOUT = 1500;
       modBus->writeRegisters( static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ), std::array{ pos } );
-      std::this_thread::sleep_for( std::chrono::milliseconds( 150 ) );
+      std::this_thread::sleep_for( std::chrono::milliseconds( kPOLLING_INTERVAL ) );
       while(isMovementInProgress())
       {
+        std::this_thread::sleep_for( std::chrono::milliseconds( kPOLLING_INTERVAL ) );
       }
-      std::this_thread::sleep_for( std::chrono::milliseconds( 1500 ) );
+      std::this_thread::sleep_for( std::chrono::milliseconds( kMOVEMENT_TIMEOUT ) );
     }
 
     const std::shared_ptr< MoveTecModBus > modBus;
