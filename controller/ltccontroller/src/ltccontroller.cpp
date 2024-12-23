@@ -2,8 +2,8 @@
 #include "movetecmodbus.h"
 
 #include <array>
-#include <ltcregister.h>
 #include <laingvalue.h>
+#include <ltcregister.h>
 #include <thread>
 
 namespace
@@ -11,11 +11,6 @@ namespace
   constexpr auto kDOWN = 6;
   constexpr auto kPOLLING_INTERVAL = 100;
   constexpr auto kMOVEMENT_TIMEOUT = 1500;
-}
-
-std::unique_ptr< ILxcController > createController( const std::shared_ptr< MoveTecModBus >& modBus )
-{
-  return std::make_unique< LtcController >( modBus );
 }
 
 class LtcController::Impl
@@ -48,10 +43,10 @@ class LtcController::Impl
 
     void moveToPosition( const USER_POSITION pos ) const
     {
-      modBus->writeRegisters( static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ),
-        std::array{ static_cast< uint16_t >( pos ) } );
+      modBus->writeRegisters(
+        static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ), std::array{ static_cast< uint16_t >( pos ) } );
       std::this_thread::sleep_for( std::chrono::milliseconds( kPOLLING_INTERVAL ) );
-      while(isMovementInProgress())
+      while( isMovementInProgress() )
       {
         std::this_thread::sleep_for( std::chrono::milliseconds( kPOLLING_INTERVAL ) );
       }
@@ -61,14 +56,13 @@ class LtcController::Impl
     void referenceRun() const
     {
       std::array< std::uint16_t, 1 > value{ kDOWN };
-      modBus->writeRegister( static_cast< uint16_t >( LTC_REGISTER::SYSTEM_MODE ),
-        static_cast< std::uint16_t >( SYSTEM_MODE::CLEAR ) );
-      modBus->writeRegister( static_cast< uint16_t >( LTC_REGISTER::SYSTEM_MODE ),
-        static_cast< std::uint16_t >( SYSTEM_MODE::REFERENCE ) );
-      modBus->writeRegisters( static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ),
-        value );
+      modBus->writeRegister(
+        static_cast< uint16_t >( LTC_REGISTER::SYSTEM_MODE ), static_cast< std::uint16_t >( SYSTEM_MODE::CLEAR ) );
+      modBus->writeRegister(
+        static_cast< uint16_t >( LTC_REGISTER::SYSTEM_MODE ), static_cast< std::uint16_t >( SYSTEM_MODE::REFERENCE ) );
+      modBus->writeRegisters( static_cast< std::uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ), value );
       std::this_thread::sleep_for( std::chrono::milliseconds( kPOLLING_INTERVAL ) );
-      while(isMovementInProgress())
+      while( isMovementInProgress() )
       {
         std::this_thread::sleep_for( std::chrono::milliseconds( kPOLLING_INTERVAL ) );
       }

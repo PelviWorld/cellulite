@@ -1,15 +1,13 @@
 #include "lmccontroller.h"
-#include "movetecmodbus.h"
-#include "lmcregister.h"
 #include "laingvalue.h"
+#include "lmcregister.h"
+#include "movetecmodbus.h"
 
-constexpr auto kMAX_USER_POSITIONS = 4;
-constexpr auto kUP = 5;
-constexpr auto kDOWN = 6;
-
-std::unique_ptr< ILxcController > createController( const std::shared_ptr< MoveTecModBus >& modBus )
+namespace
 {
-  return std::make_unique< LmcController >( modBus );
+  constexpr auto kMAX_USER_POSITIONS = 4;
+  constexpr auto kUP = 5;
+  constexpr auto kDOWN = 6;
 }
 
 class LmcController::Impl
@@ -52,7 +50,6 @@ class LmcController::Impl
     {
       return 0;
     }
-
 
     const std::shared_ptr< MoveTecModBus > modBus;
 };

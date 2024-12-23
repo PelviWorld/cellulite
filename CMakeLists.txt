@@ -33,8 +33,6 @@ add_subdirectory(controller)
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
         laingcontroller::laingcontroller
-        INTERFACE
-        lainginterface::lainginterface
 )
 
 install(
