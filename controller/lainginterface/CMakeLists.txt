@@ -7,12 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-target_sources(${PROJECT_NAME}
-        INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/ilaingcontroller.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/ilxccontroller.h
-)
-
 target_include_directories(${PROJECT_NAME}
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>

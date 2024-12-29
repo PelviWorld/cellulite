@@ -30,7 +30,3 @@ class LtcController final : public ILxcController
     class Impl;
     std::unique_ptr< Impl > m_pImpl;
 };
-
-extern "C" {
-std::unique_ptr< ILxcController > createController( const std::shared_ptr< MoveTecModBus >& modBus );
-}

@@ -1,11 +1,12 @@
 #pragma once
 #include <memory>
-#include "ilaingcontroller.h"
-#include <laingvalue.h>
+#include <string>
+
+#include "laingvalue.h"
 
 class MoveTecModBus;
 
-class LaingController final : public ILaingController
+class LaingController final
 {
   public:
     explicit LaingController( const std::string& device );
@@ -18,13 +19,13 @@ class LaingController final : public ILaingController
 
     LaingController& operator=( LaingController&& ) = delete;
 
-    ~LaingController() override;
+    ~LaingController();
 
-    std::uint16_t getTableHeight( AXIS axis ) const override;
+    std::uint16_t getTableHeight( AXIS axis ) const;
 
-    void moveToUserPosition( AXIS axis, USER_POSITION pos ) const override;
+    void moveToUserPosition( AXIS axis, USER_POSITION pos ) const;
 
-    void referenceRun( AXIS axis ) const override;
+    void referenceRun( AXIS axis ) const;
 
   private:
     class Impl;

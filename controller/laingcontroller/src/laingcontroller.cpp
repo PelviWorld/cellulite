@@ -1,11 +1,13 @@
 #include "laingcontroller.h"
 
 #include "ilxccontroller.h"
-#include "movetecmodbus.h"
 #include "laingbasicregister.h"
+#include "movetecmodbus.h"
+
+#include "lmccontroller.h"
+#include "ltccontroller.h"
 
 #include <array>
-#include <dlfcn.h>
 #include <iostream>
 #include <thread>
 
@@ -21,7 +23,7 @@ class LaingController::Impl
       : modBus{ std::make_shared< MoveTecModBus >( device ) }
     {
       readBasicData();
-      loadController();
+      createController();
     }
 
     ~Impl() = default;
@@ -68,37 +70,10 @@ class LaingController::Impl
       serialNumber = serialNumberMid << kWORD_SIZE | serialNumberLow;
     }
 
-    void loadController()
-    {
-      std::string soname = "libltccontroller.so";
-      if(whoAmI == 0x0001)
-      {
-        soname = "liblmccontroller.so";
-      }
-      const std::string func = "createController";
-      void* handler = dlopen( soname.c_str(), RTLD_LAZY );
-      if(handler == nullptr)
-      {
-        std::cerr << "Failed to load " << soname << ": " << dlerror() << std::endl;
-        return;
-      }
-      dlerror();
-      void* pcreate = dlsym( handler, func.c_str() );
-      if(pcreate == nullptr)
-      {
-        std::cerr << "Failed to load " << func << ": " << dlerror() << std::endl;
-        return;
-      }
-      const auto createController = reinterpret_cast // NOLINT(*-pro-type-reinterpret-cast)
-        < std::unique_ptr< ILxcController > ( * )( const std::shared_ptr< MoveTecModBus >& ) >( pcreate );
-      lxcController = createController( modBus );
-    }
-
-
     void readRegister( const LAING_REGISTER address, std::uint16_t& value ) const
     {
-      if(std::array< std::uint16_t, 1 > temp{ 0 }; modBus->readRegisters( static_cast< std::uint16_t >( address ),
-        temp ))
+      if( std::array< std::uint16_t, 1 > temp{ 0 };
+        modBus->readRegisters( static_cast< std::uint16_t >( address ), temp ) )
       {
         value = temp[ 0 ];
       }
@@ -133,6 +108,19 @@ class LaingController::Impl
     std::uint16_t configChecksumHi{ 0 };
     std::uint16_t configChecksumLo{ 0 };
     int serialNumber{ 0 };
+
+  private:
+    void createController()
+    {
+      if( whoAmI == 0 )
+      {
+        lxcController = std::make_unique< LtcController >( modBus );
+      }
+      else if( whoAmI == 1 )
+      {
+        lxcController = std::make_unique< LmcController >( modBus );
+      }
+    }
 };
 
 LaingController::LaingController( const std::string& device )
@@ -140,19 +128,19 @@ LaingController::LaingController( const std::string& device )
 {
 }
 
-std::uint16_t LaingController::getTableHeight( AXIS axis ) const
+std::uint16_t LaingController::getTableHeight( const AXIS axis ) const
 {
   return m_pImpl->lxcController->getTableHeight( axis );
 }
 
 LaingController::~LaingController() = default;
 
-void LaingController::moveToUserPosition( AXIS axis, const USER_POSITION pos ) const
+void LaingController::moveToUserPosition( const AXIS axis, const USER_POSITION pos ) const
 {
   m_pImpl->lxcController->moveToUserPosition( axis, pos );
 }
 
-void LaingController::referenceRun( AXIS axis ) const
+void LaingController::referenceRun( const AXIS axis ) const
 {
   m_pImpl->lxcController->referenceRun( axis );
 }
