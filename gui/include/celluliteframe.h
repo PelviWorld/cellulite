@@ -12,6 +12,10 @@ class CelluliteFrame final : public wxFrame
   public:
     CelluliteFrame();
 
+    void createMenuBar();
+    void crateStatusBar();
+    void createStartFrame();
+
   private:
     void onHello( wxCommandEvent& event );
     void onExit( wxCommandEvent& event );

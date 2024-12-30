@@ -1,7 +1,6 @@
 #include "celluliteframe.h"
 
-CelluliteFrame::CelluliteFrame()
-  : wxFrame( nullptr, wxID_ANY, "Cellulite" )
+void CelluliteFrame::createMenuBar()
 {
   auto* menuFile = new wxMenu;
   menuFile->Append( ID_HELLO, "&Hello...\tCtrl-H", "Greetings from Cellulite App" );
@@ -17,15 +16,21 @@ CelluliteFrame::CelluliteFrame()
 
   wxFrameBase::SetMenuBar( menuBar );
 
-  wxFrameBase::CreateStatusBar();
-  wxFrameBase::SetStatusText( "Welcome to Cellulite App!" );
-
   Bind( wxEVT_MENU, &CelluliteFrame::onHello, this, ID_HELLO );
   Bind( wxEVT_MENU, &CelluliteFrame::onAbout, this, wxID_ABOUT );
   Bind( wxEVT_MENU, &CelluliteFrame::onExit, this, wxID_EXIT );
+}
 
+void CelluliteFrame::crateStatusBar()
+{
+  wxFrameBase::CreateStatusBar();
+  wxFrameBase::SetStatusText( "Welcome to Cellulite App!" );
+}
+
+void CelluliteFrame::createStartFrame()
+{
   auto* trainingButton = new wxButton( this, ID_TRAINING, "Start Training" );
-  auto bgColour = trainingButton->GetBackgroundColour();
+  const auto bgColour = trainingButton->GetBackgroundColour();
   wxWindowBase::SetBackgroundColour( bgColour );
 
   auto* frameSizer = new wxBoxSizer( wxVERTICAL );
@@ -34,6 +39,14 @@ CelluliteFrame::CelluliteFrame()
   SetSizer( frameSizer );
 
   Bind( wxEVT_BUTTON, &CelluliteFrame::onTraining, this, ID_TRAINING );
+}
+
+CelluliteFrame::CelluliteFrame()
+  : wxFrame( nullptr, wxID_ANY, "Cellulite" )
+{
+  createMenuBar();
+  crateStatusBar();
+  createStartFrame();
 }
 
 void CelluliteFrame::onExit( wxCommandEvent& event )
