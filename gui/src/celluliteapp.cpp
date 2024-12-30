@@ -63,6 +63,8 @@ namespace
         return;
       }
     }
+    throw std::runtime_error(
+      "Can't find axis for controller with serial number: " + std::to_string( controllerSerial ) );
   }
 
   void createControllerMap( const INIReader& reader, const std::unordered_map< ControllerAxis, int >& serialConfig,
@@ -73,6 +75,7 @@ namespace
     moveControllerToMap( std::make_shared< LaingController >( deviceOne ), serialConfig, controllerMap );
     moveControllerToMap( std::make_shared< LaingController >( deviceTwo ), serialConfig, controllerMap );
   }
+
   void createController( ControllerMap& controllerMap )
   {
     const auto reader = getReader( "cellulite.ini" );
@@ -92,7 +95,7 @@ bool CelluliteApp::OnInit()
   catch( std::runtime_error& /*e*/ )
   {
     std::cout << "Failed to load configuration file: " << std::endl;
-    return true;
+    exit( 1 );
   }
 
   auto* frame = new CelluliteFrame( controllerMap );
