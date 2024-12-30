@@ -15,11 +15,13 @@ add_library(${PROJECT_NAME} STATIC
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 find_package(wxWidgets REQUIRED COMPONENTS core base)
+find_package(inih REQUIRED)
 
 target_link_libraries(${PROJECT_NAME}
         PUBLIC
         ${wxWidgets_LIBRARIES}
         PRIVATE
+        inih::inih
         laingcontroller::laingcontroller
 )
 
