@@ -9,6 +9,7 @@ class MoveTecModBus;
 class LaingController final
 {
   public:
+    LaingController();
     explicit LaingController( const std::string& device );
 
     LaingController( const LaingController& ) = delete;
@@ -21,6 +22,8 @@ class LaingController final
 
     ~LaingController();
 
+    void setDevice( const std::string& device );
+
     std::uint16_t getTableHeight( AXIS axis ) const;
 
     void moveToUserPosition( AXIS axis, USER_POSITION pos ) const;
@@ -28,6 +31,7 @@ class LaingController final
     void referenceRun( AXIS axis ) const;
 
   private:
+    std::string m_device;
     class Impl;
     std::unique_ptr< Impl > m_pImpl;
 };

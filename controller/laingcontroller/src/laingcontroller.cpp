@@ -123,24 +123,49 @@ class LaingController::Impl
     }
 };
 
+LaingController::LaingController()
+  : m_device{ "" }
+  , m_pImpl{ nullptr }
+{
+}
 LaingController::LaingController( const std::string& device )
-  : m_pImpl{ std::make_unique< Impl >( device ) }
+  : m_device( device )
+  , m_pImpl{ std::make_unique< Impl >( device ) }
 {
 }
 
 std::uint16_t LaingController::getTableHeight( const AXIS axis ) const
 {
-  return m_pImpl->lxcController->getTableHeight( axis );
+  if( m_pImpl )
+  {
+    return m_pImpl->lxcController->getTableHeight( axis );
+  }
+  return 0;
 }
 
 LaingController::~LaingController() = default;
 
+void LaingController::setDevice( const std::string& device )
+{
+  if( m_pImpl )
+  {
+    m_pImpl.reset();
+  }
+  m_pImpl = std::make_unique< Impl >( device );
+}
+
 void LaingController::moveToUserPosition( const AXIS axis, const USER_POSITION pos ) const
 {
-  m_pImpl->lxcController->moveToUserPosition( axis, pos );
+  if( m_pImpl )
+  {
+    m_pImpl->lxcController->moveToUserPosition( axis, pos );
+  }
 }
 
 void LaingController::referenceRun( const AXIS axis ) const
 {
-  m_pImpl->lxcController->referenceRun( axis );
+  if( m_pImpl )
+  {
+    m_pImpl->lxcController->referenceRun( axis );
+  }
 }
