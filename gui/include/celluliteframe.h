@@ -21,6 +21,9 @@ class CelluliteFrame final : public wxFrame
     void createStartFrame();
 
   private:
+    void onHoverEnter( wxMouseEvent& event );
+    void onHoverLeave( wxMouseEvent& event );
+
     void onHello( wxCommandEvent& event );
     void onExit( wxCommandEvent& event );
     void onAbout( wxCommandEvent& event );
