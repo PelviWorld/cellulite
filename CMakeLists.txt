@@ -17,22 +17,24 @@ include(${CMAKE_SOURCE_DIR}/cmake/GenerateVersion.cmake)
 project(cellulitegui
         VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}
         DESCRIPTION "Cellulite GUI"
-        LANGUAGES CXX
+        LANGUAGES CXX C
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_executable(${PROJECT_NAME}
+add_executable(${PROJECT_NAME} WIN32
         src/main.cpp
 )
 
 add_subdirectory(controller)
+add_subdirectory(gui)
 
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
         laingcontroller::laingcontroller
+        gui::gui
 )
 
 install(
