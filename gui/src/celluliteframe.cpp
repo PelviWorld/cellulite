@@ -1,4 +1,5 @@
 #include "celluliteframe.h"
+#include "cg_version.h"
 
 void CelluliteFrame::createMenuBar()
 {
@@ -59,7 +60,8 @@ void CelluliteFrame::onExit( wxCommandEvent& event )
 
 void CelluliteFrame::onAbout( wxCommandEvent& event )
 {
-  wxMessageBox( "This is the Cellulite App", "About Cellulite App", wxOK | wxICON_INFORMATION );
+  wxMessageBox( "This is the Cellulite App Version\n" + std::string( CG_VERSION ), "About Cellulite App",
+    wxOK | wxICON_INFORMATION );
 }
 void CelluliteFrame::onTraining( wxCommandEvent& event )
 {
