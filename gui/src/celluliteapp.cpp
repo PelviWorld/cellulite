@@ -7,3 +7,8 @@ bool CelluliteApp::OnInit()
   frame->Show( true );
   return true;
 }
+LaingController& CelluliteApp::getController( const ControllerAxis axis )
+{
+  assert( m_controller.contains( axis ) );
+  return m_controller[ axis ];
+}

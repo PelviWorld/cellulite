@@ -19,6 +19,8 @@ find_package(wxWidgets REQUIRED COMPONENTS core base)
 target_link_libraries(${PROJECT_NAME}
         PUBLIC
         ${wxWidgets_LIBRARIES}
+        PRIVATE
+        laingcontroller::laingcontroller
 )
 
 target_include_directories(${PROJECT_NAME}
