@@ -10,6 +10,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_library(${PROJECT_NAME} STATIC
         src/celluliteapp.cpp
+        src/celluliteframe.cpp
 )
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
