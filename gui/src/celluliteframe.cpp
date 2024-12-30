@@ -42,8 +42,11 @@ void CelluliteFrame::createStartFrame()
 }
 
 CelluliteFrame::CelluliteFrame()
-  : wxFrame( nullptr, wxID_ANY, "Cellulite" )
+  : wxFrame( nullptr, wxID_ANY, "Cellulite", wxDefaultPosition, wxSize( 480, 800 ),
+      wxDEFAULT_FRAME_STYLE & ~( wxRESIZE_BORDER | wxMAXIMIZE_BOX ) )
 {
+  wxTopLevelWindowBase::SetMinSize( wxSize( 480, 800 ) );
+  wxTopLevelWindowBase::SetMaxSize( wxSize( 480, 800 ) );
   createMenuBar();
   crateStatusBar();
   createStartFrame();
