@@ -45,13 +45,21 @@ auto getReader( const std::string& filename )
 bool CelluliteApp::OnInit()
 {
   RedirectIOToLogFile( "cellulite.log" );
-  const auto reader = getReader( "cellulite.ini" );
+  try
+  {
+    const auto reader = getReader( "cellulite.ini" );
 
-  auto deviceOne = getValue( reader, "DEVICES", "one" );
-  auto deviceTwo = getValue( reader, "DEVICES", "two" );
+    auto deviceOne = getValue( reader, "DEVICES", "one" );
+    auto deviceTwo = getValue( reader, "DEVICES", "two" );
 
-  auto axisWidth = getValue( reader, "AXIS", "width" );
-  auto axisHeight = getValue( reader, "AXIS", "height" );
+    auto axisWidth = getValue( reader, "AXIS", "width" );
+    auto axisHeight = getValue( reader, "AXIS", "height" );
+  }
+  catch( std::runtime_error )
+  {
+    std::cout << "Failed to load configuration file" << std::endl;
+    return false;
+  }
 
   auto* frame = new CelluliteFrame();
   frame->Show( true );
