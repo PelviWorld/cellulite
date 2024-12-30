@@ -2,26 +2,8 @@
 #include "INIReader.h"
 #include "celluliteframe.h"
 
-#include <fstream>
-
 namespace
 {
-  std::ofstream logFile;
-
-  void RedirectIOToLogFile( const std::string& logFileName )
-  {
-    logFile.open( logFileName );
-    if( logFile.is_open() )
-    {
-      std::cout.rdbuf( logFile.rdbuf() );
-      std::cerr.rdbuf( logFile.rdbuf() );
-    }
-    else
-    {
-      std::cerr << "Failed to open log file: " << logFileName << std::endl;
-    }
-  }
-
   std::string getString( const INIReader& reader, const std::string& section, const std::string& key )
   {
     std::string value = reader.Get( section, key, "-" );
@@ -35,7 +17,7 @@ namespace
 
   int getValue( const INIReader& reader, const std::string& section, const std::string& key )
   {
-    const int value = reader.GetInteger64( section, key, 0 );
+    const int value = reader.GetInteger( section, key, 0 );
     if( value == 0 )
     {
       std::cout << "Can't find " << key << " in " << section << " section\n" << std::endl;
@@ -69,18 +51,46 @@ namespace
     return result;
   }
 
-}
+  void moveControllerToMap( const std::shared_ptr< LaingController >& controller,
+    const std::unordered_map< ControllerAxis, int >& serialConfig, ControllerMap& controllerMap )
+  {
+    const auto controllerSerial = controller->getSerialNumber();
+    for( const auto& [ axis, serial ] : serialConfig )
+    {
+      if( serial == controllerSerial )
+      {
+        controllerMap[ axis ] = controller;
+        return;
+      }
+    }
+  }
+
+  void createControllerMap( const INIReader& reader, const std::unordered_map< ControllerAxis, int >& serialConfig,
+    ControllerMap& controllerMap )
+  {
+    std::string deviceOne = getString( reader, "DEVICES", "one" );
+    std::string deviceTwo = getString( reader, "DEVICES", "two" );
+    moveControllerToMap( std::make_shared< LaingController >( deviceOne ), serialConfig, controllerMap );
+    moveControllerToMap( std::make_shared< LaingController >( deviceTwo ), serialConfig, controllerMap );
+  }
+  void createController( ControllerMap& controllerMap )
+  {
+    const auto reader = getReader( "cellulite.ini" );
+    const auto serialConfig = readSerialConfig( reader );
+    createControllerMap( reader, serialConfig, controllerMap );
+  }
+
+} // namespace
 
 bool CelluliteApp::OnInit()
 {
-  RedirectIOToLogFile( "cellulite.log" );
   try
   {
-    createController();
+    createController( m_controller );
   }
-  catch( std::runtime_error )
+  catch( std::runtime_error& /*e*/ )
   {
-    std::cout << "Failed to load configuration file" << std::endl;
+    std::cout << "Failed to load configuration file: " << std::endl;
     return true;
   }
 
@@ -93,34 +103,4 @@ std::shared_ptr< LaingController > CelluliteApp::getController( const Controller
 {
   assert( m_controller.contains( axis ) );
   return m_controller[ axis ];
-}
-
-void CelluliteApp::createController()
-{
-  const auto reader = getReader( "cellulite.ini" );
-  const auto serialConfig = readSerialConfig( reader );
-  createControllerMap( reader, serialConfig );
-}
-
-void CelluliteApp::createControllerMap(
-  const INIReader& reader, const std::unordered_map< ControllerAxis, int >& serialConfig )
-{
-  std::string deviceOne = getString( reader, "DEVICES", "one" );
-  std::string deviceTwo = getString( reader, "DEVICES", "two" );
-  moveControllerToMap( std::make_shared< LaingController >( deviceOne ), serialConfig );
-  moveControllerToMap( std::make_shared< LaingController >( deviceTwo ), serialConfig );
-}
-
-void CelluliteApp::moveControllerToMap(
-  std::shared_ptr< LaingController > controller, const std::unordered_map< ControllerAxis, int >& serialConfig )
-{
-  const auto controllerSerial = controller->getSerialNumber();
-  for( const auto& [ axis, serial ] : serialConfig )
-  {
-    if( serial == controllerSerial )
-    {
-      m_controller[ axis ] = std::move( controller );
-      return;
-    }
-  }
 }
