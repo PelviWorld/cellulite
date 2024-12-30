@@ -24,7 +24,15 @@ CelluliteFrame::CelluliteFrame()
   Bind( wxEVT_MENU, &CelluliteFrame::onAbout, this, wxID_ABOUT );
   Bind( wxEVT_MENU, &CelluliteFrame::onExit, this, wxID_EXIT );
 
-  auto* trainingButton = new wxButton( this, ID_TRAINING, "Training", wxPoint( 20, 20 ) );
+  auto* trainingButton = new wxButton( this, ID_TRAINING, "Start Training" );
+  auto bgColour = trainingButton->GetBackgroundColour();
+  wxWindowBase::SetBackgroundColour( bgColour );
+
+  auto* frameSizer = new wxBoxSizer( wxVERTICAL );
+  frameSizer->AddStretchSpacer( 1 );
+  frameSizer->Add( trainingButton, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 15 );
+  SetSizer( frameSizer );
+
   Bind( wxEVT_BUTTON, &CelluliteFrame::onTraining, this, ID_TRAINING );
 }
 
