@@ -4,16 +4,16 @@
 
 enum
 {
-  ID_Hello = 1
+  ID_HELLO = 1
 };
 
-class CelluliteApp : public wxApp
+class CelluliteApp final : public wxApp
 {
   public:
     bool OnInit() override;
 };
 
-class CelluliteFrame : public wxFrame
+class CelluliteFrame final : public wxFrame
 {
   public:
     CelluliteFrame();

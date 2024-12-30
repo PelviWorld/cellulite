@@ -1,9 +1,8 @@
 #include "celluliteapp.h"
-#include <wx/wx.h>
 
 bool CelluliteApp::OnInit()
 {
-  CelluliteFrame* frame = new CelluliteFrame();
+  auto* frame = new CelluliteFrame();
   frame->Show( true );
   return true;
 }
@@ -11,24 +10,24 @@ bool CelluliteApp::OnInit()
 CelluliteFrame::CelluliteFrame()
   : wxFrame( nullptr, wxID_ANY, "Cellulite" )
 {
-  wxMenu* menuFile = new wxMenu;
-  menuFile->Append( ID_Hello, "&Hello...\tCtrl-H", "Greetings from Cellulite App" );
+  auto* menuFile = new wxMenu;
+  menuFile->Append( ID_HELLO, "&Hello...\tCtrl-H", "Greetings from Cellulite App" );
   menuFile->AppendSeparator();
   menuFile->Append( wxID_EXIT );
 
-  wxMenu* menuHelp = new wxMenu;
+  auto* menuHelp = new wxMenu;
   menuHelp->Append( wxID_ABOUT );
 
-  wxMenuBar* menuBar = new wxMenuBar;
+  auto* menuBar = new wxMenuBar;
   menuBar->Append( menuFile, "&File" );
   menuBar->Append( menuHelp, "&Help" );
 
-  SetMenuBar( menuBar );
+  wxFrameBase::SetMenuBar( menuBar );
 
-  CreateStatusBar();
-  SetStatusText( "Welcome to Cellulite App!" );
+  wxFrameBase::CreateStatusBar();
+  wxFrameBase::SetStatusText( "Welcome to Cellulite App!" );
 
-  Bind( wxEVT_MENU, &CelluliteFrame::onHello, this, ID_Hello );
+  Bind( wxEVT_MENU, &CelluliteFrame::onHello, this, ID_HELLO );
   Bind( wxEVT_MENU, &CelluliteFrame::onAbout, this, wxID_ABOUT );
   Bind( wxEVT_MENU, &CelluliteFrame::onExit, this, wxID_EXIT );
 }
