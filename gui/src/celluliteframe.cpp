@@ -1,6 +1,13 @@
 #include "celluliteframe.h"
 #include "cg_version.h"
 
+namespace
+{
+  constexpr auto kWINDOW_WIDTH = 480;
+  constexpr auto kWINDOW_HEIGHT = 800;
+  constexpr auto kWIDGET_BORDER = 15;
+}
+
 void CelluliteFrame::createMenuBar()
 {
   auto* menuFile = new wxMenu;
@@ -36,18 +43,18 @@ void CelluliteFrame::createStartFrame()
 
   auto* frameSizer = new wxBoxSizer( wxVERTICAL );
   frameSizer->AddStretchSpacer( 1 );
-  frameSizer->Add( trainingButton, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 15 );
+  frameSizer->Add( trainingButton, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, kWIDGET_BORDER );
   SetSizer( frameSizer );
 
   Bind( wxEVT_BUTTON, &CelluliteFrame::onTraining, this, ID_TRAINING );
 }
 
 CelluliteFrame::CelluliteFrame()
-  : wxFrame( nullptr, wxID_ANY, "Cellulite", wxDefaultPosition, wxSize( 480, 800 ),
+  : wxFrame( nullptr, wxID_ANY, "Cellulite", wxDefaultPosition, wxSize( kWINDOW_WIDTH, kWINDOW_HEIGHT ),
       wxDEFAULT_FRAME_STYLE & ~( wxRESIZE_BORDER | wxMAXIMIZE_BOX ) )
 {
-  wxTopLevelWindowBase::SetMinSize( wxSize( 480, 800 ) );
-  wxTopLevelWindowBase::SetMaxSize( wxSize( 480, 800 ) );
+  wxTopLevelWindowBase::SetMinSize( wxSize( kWINDOW_WIDTH, kWINDOW_HEIGHT ) );
+  wxTopLevelWindowBase::SetMaxSize( wxSize( kWINDOW_WIDTH, kWINDOW_HEIGHT ) );
   createMenuBar();
   crateStatusBar();
   createStartFrame();
