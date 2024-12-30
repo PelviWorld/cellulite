@@ -169,3 +169,12 @@ void LaingController::referenceRun( const AXIS axis ) const
     m_pImpl->lxcController->referenceRun( axis );
   }
 }
+
+int LaingController::getSerialNumber() const
+{
+  if( m_pImpl )
+  {
+    return m_pImpl->serialNumber;
+  }
+  return 0;
+}

@@ -30,6 +30,8 @@ class LaingController final
 
     void referenceRun( AXIS axis ) const;
 
+    int getSerialNumber() const;
+
   private:
     std::string m_device;
     class Impl;
