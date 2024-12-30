@@ -20,20 +20,39 @@ void RedirectIOToLogFile( const std::string& logFileName )
   }
 }
 
+auto getValue( const INIReader& reader, const std::string& section, const std::string& key )
+{
+  auto value = reader.Get( section, key, "-" );
+  if( value == "-" )
+  {
+    std::cout << "Can't find " << key << " in " << section << " section\n" << std::endl;
+    throw std::runtime_error( "Can't find " + key + " in " + section + " section" );
+  }
+  return value;
+}
+
+auto getReader( const std::string& filename )
+{
+  INIReader reader( filename );
+  if( reader.ParseError() != 0 )
+  {
+    std::cout << "Can't load 'cellulite.ini'\n" << std::endl;
+    throw std::runtime_error( "Can't load 'cellulite.ini'" );
+  }
+  return reader;
+}
+
 bool CelluliteApp::OnInit()
 {
   RedirectIOToLogFile( "cellulite.log" );
-  if( const INIReader reader( "cellulite.ini" ); reader.ParseError() != 0 )
-  {
-    std::cout << "Can't load 'cellulite.ini'\n" << std::endl;
-  }
-  else
-  {
-    std::cout << "Config value: " << reader.Get( "DEVICES", "one", "NOTHING" ) << std::endl;
-    std::cout << "Config value: " << reader.Get( "DEVICES", "two", "NOTHING" ) << std::endl;
-    std::cout << "Config value: " << reader.Get( "AXIS", "width", "NOTHING" ) << std::endl;
-    std::cout << "Config value: " << reader.Get( "AXIS", "height", "NOTHING" ) << std::endl;
-  }
+  const auto reader = getReader( "cellulite.ini" );
+
+  auto deviceOne = getValue( reader, "DEVICES", "one" );
+  auto deviceTwo = getValue( reader, "DEVICES", "two" );
+
+  auto axisWidth = getValue( reader, "AXIS", "width" );
+  auto axisHeight = getValue( reader, "AXIS", "height" );
+
   auto* frame = new CelluliteFrame();
   frame->Show( true );
   return true;
