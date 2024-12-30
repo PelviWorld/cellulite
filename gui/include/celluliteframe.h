@@ -1,16 +1,20 @@
 #pragma once
+#include "controller.h"
 #include <wx/wx.h>
 
 enum
 {
   ID_HELLO = 1,
-  ID_TRAINING = 2,
+  ID_TRAINING,
+  ID_POS_1,
+  ID_POS_2,
+  ID_REFERENCE
 };
 
 class CelluliteFrame final : public wxFrame
 {
   public:
-    CelluliteFrame();
+    explicit CelluliteFrame( const ControllerMap& controllerMap );
 
     void createMenuBar();
     void crateStatusBar();
@@ -21,4 +25,9 @@ class CelluliteFrame final : public wxFrame
     void onExit( wxCommandEvent& event );
     void onAbout( wxCommandEvent& event );
     void onTraining( wxCommandEvent& event );
+    void onPos1( wxCommandEvent& event );
+    void onPos2( wxCommandEvent& event );
+    void onReference( wxCommandEvent& event );
+
+    ControllerMap m_controllerMap;
 };

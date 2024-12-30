@@ -84,9 +84,10 @@ namespace
 
 bool CelluliteApp::OnInit()
 {
+  ControllerMap controllerMap;
   try
   {
-    createController( m_controller );
+    createController( controllerMap );
   }
   catch( std::runtime_error& /*e*/ )
   {
@@ -94,13 +95,7 @@ bool CelluliteApp::OnInit()
     return true;
   }
 
-  auto* frame = new CelluliteFrame();
+  auto* frame = new CelluliteFrame( controllerMap );
   frame->Show( true );
   return true;
-}
-
-std::shared_ptr< LaingController > CelluliteApp::getController( const ControllerAxis axis )
-{
-  assert( m_controller.contains( axis ) );
-  return m_controller[ axis ];
 }
