@@ -26,7 +26,7 @@ jobs:
 
       - name: Configure CMake
         run: cmake -S . -B build
-        
+
       - name: Build
         run: cmake --build build --config Release
 
@@ -37,4 +37,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: installer
-          path: build/*.exe
+          path: build/packages/*.exe
