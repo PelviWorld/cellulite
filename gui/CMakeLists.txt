@@ -35,3 +35,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${CMAKE_CURRENT_SOURCE_DIR}/cellulite.ini
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/cellulite.ini
 )
+
+include(GNUInstallDirs)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cellulite.ini DESTINATION ${CMAKE_INSTALL_BINDIR})
