@@ -95,7 +95,7 @@ bool CelluliteApp::OnInit()
   catch( std::runtime_error& /*e*/ )
   {
     std::cout << "Failed to load configuration file: " << std::endl;
-    exit( 1 );
+    //exit( 1 );
   }
 
   auto* frame = new CelluliteFrame( controllerMap );
