@@ -8,7 +8,9 @@
 #include "ltccontroller.h"
 
 #include <array>
+#include <functional>
 #include <iostream>
+#include <mutex>
 #include <thread>
 
 namespace
@@ -116,6 +118,15 @@ class LaingController::Impl
     std::uint16_t configChecksumLo{ 0 };
     int serialNumber{ 0 };
 
+    mutable std::mutex mtx;
+    mutable std::condition_variable cv;
+    mutable bool isRunning{ false };
+
+    void runInThread( std::function< void() > func )
+    {
+      std::thread( [ func ]() { func(); } ).detach();
+    }
+
   private:
     void createController()
     {
@@ -163,18 +174,36 @@ void LaingController::setDevice( const std::string& device )
 
 void LaingController::moveToUserPosition( const AXIS axis, const USER_POSITION pos ) const
 {
-  if( m_pImpl )
+  std::unique_lock< std::mutex > lock( m_pImpl->mtx );
+  if( m_pImpl->isRunning )
   {
-    m_pImpl->lxcController->moveToUserPosition( axis, pos );
+    return; // Discard the call if another operation is still running
   }
+  m_pImpl->isRunning = true;
+  std::thread( [ this, axis, pos ] {
+    m_pImpl->lxcController->moveToUserPosition( axis, pos );
+    std::lock_guard< std::mutex > lock( m_pImpl->mtx );
+    m_pImpl->isRunning = false;
+    m_pImpl->cv.notify_one();
+  } )
+    .detach();
 }
 
 void LaingController::referenceRun( const AXIS axis ) const
 {
-  if( m_pImpl )
+  std::unique_lock< std::mutex > lock( m_pImpl->mtx );
+  if( m_pImpl->isRunning )
   {
-    m_pImpl->lxcController->referenceRun( axis );
+    return; // Discard the call if another operation is still running
   }
+  m_pImpl->isRunning = true;
+  std::thread( [ this, axis ] {
+    m_pImpl->lxcController->referenceRun( axis );
+    std::lock_guard< std::mutex > lock( m_pImpl->mtx );
+    m_pImpl->isRunning = false;
+    m_pImpl->cv.notify_one();
+  } )
+    .detach();
 }
 
 int LaingController::getSerialNumber() const
