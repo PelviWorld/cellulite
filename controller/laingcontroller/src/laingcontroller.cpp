@@ -22,6 +22,13 @@ class LaingController::Impl
     explicit Impl( const std::string& device )
       : modBus{ std::make_shared< MoveTecModBus >( device ) }
     {
+      readRegister( LAING_REGISTER::FIRMWARE_VERSION, firmwareVersion );
+      readRegister( LAING_REGISTER::VALIDITY, validity );
+      if( validity == 0 && firmwareVersion == 0 )
+      {
+        std::cerr << "Device is not valid" << std::endl;
+        return;
+      }
       readBasicData();
       createController();
     }
@@ -124,10 +131,10 @@ class LaingController::Impl
 };
 
 LaingController::LaingController()
-  : m_device{ "" }
-  , m_pImpl{ nullptr }
+  : m_pImpl{ nullptr }
 {
 }
+
 LaingController::LaingController( const std::string& device )
   : m_device( device )
   , m_pImpl{ std::make_unique< Impl >( device ) }
