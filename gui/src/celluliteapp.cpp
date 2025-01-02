@@ -90,6 +90,11 @@ namespace
     const std::unordered_map< ControllerAxis, int >& serialConfig, ControllerMap& controllerMap )
   {
     const auto controllerSerial = controller->getSerialNumber();
+    if(controllerSerial == 0)
+    {
+      return;
+    }
+
     for( const auto& [ axis, serial ] : serialConfig )
     {
       if( serial == controllerSerial )
