@@ -6,7 +6,8 @@ Checks: "-*,
         -cppcoreguidelines-owning-memory,
         google-*,
         readability-*,
-        -*-convert-member-functions-to-static
+        -*-convert-member-functions-to-static,
+        -*-err58-cpp
 "
 WarningsAsErrors: ""
 HeaderFilterRegex: ""
