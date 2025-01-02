@@ -4,10 +4,18 @@ project(gui
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(${PROJECT_NAME} STATIC
+set(SOURCES
         src/celluliteapp.cpp
         src/celluliteframe.cpp
 )
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    list(APPEND SOURCES src/windowsutility.cpp)
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    list(APPEND SOURCES src/linuxutility.cpp)
+endif ()
+
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 find_package(wxWidgets REQUIRED COMPONENTS core base)
