@@ -2,8 +2,42 @@
 #include "INIReader.h"
 #include "celluliteframe.h"
 
+#include <array>
+
+#ifdef WIN32
+#include <windows.h>
 namespace
 {
+  std::vector<std::string> getAvailableComPorts()
+  {
+    constexpr auto kSZ_DEVICES = 65535;
+    std::vector<std::string> comPorts;
+    std::array<char,kSZ_DEVICES> szDevices{};
+    const DWORD dwRet = QueryDosDeviceA( nullptr, szDevices.data(), kSZ_DEVICES  );
+    if (dwRet != 0U)
+    {
+      const char* pszNext = szDevices.data();
+      while (*pszNext != 0)
+      {
+        if (strncmp(pszNext, "COM", 3) == 0)
+        {
+          comPorts.push_back(pszNext);
+        }
+        pszNext += strlen(pszNext) + 1; // NOLINT(*-pro-bounds-pointer-arithmetic)
+      }
+    }
+    else
+    {
+      std::cerr << "QueryDosDeviceA failed with error: " << GetLastError() << std::endl;
+    }
+    return comPorts;
+  }
+}
+#endif
+
+namespace
+{
+#ifndef WIN32
   std::string getString( const INIReader& reader, const std::string& section, const std::string& key )
   {
     std::string value = reader.Get( section, key, "-" );
@@ -14,6 +48,7 @@ namespace
     }
     return value;
   }
+#endif
 
   int getValue( const INIReader& reader, const std::string& section, const std::string& key )
   {
@@ -63,17 +98,23 @@ namespace
         return;
       }
     }
-    throw std::runtime_error(
-      "Can't find axis for controller with serial number: " + std::to_string( controllerSerial ) );
   }
 
   void createControllerMap( const INIReader& reader, const std::unordered_map< ControllerAxis, int >& serialConfig,
     ControllerMap& controllerMap )
   {
+#ifdef WIN32
+    for ( const std::vector< std::string > comPorts = getAvailableComPorts(); const auto& port : comPorts)
+    {
+      moveControllerToMap( std::make_shared< LaingController >( port ), serialConfig, controllerMap );
+    }
+#else
     std::string deviceOne = getString( reader, "DEVICES", "one" );
     std::string deviceTwo = getString( reader, "DEVICES", "two" );
     moveControllerToMap( std::make_shared< LaingController >( deviceOne ), serialConfig, controllerMap );
     moveControllerToMap( std::make_shared< LaingController >( deviceTwo ), serialConfig, controllerMap );
+#endif
+
   }
 
   void createController( ControllerMap& controllerMap )
@@ -95,7 +136,7 @@ bool CelluliteApp::OnInit()
   catch( std::runtime_error& /*e*/ )
   {
     std::cout << "Failed to load configuration file: " << std::endl;
-    //exit( 1 );
+    exit( 1 );
   }
 
   auto* frame = new CelluliteFrame( controllerMap );
