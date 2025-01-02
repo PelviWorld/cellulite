@@ -129,7 +129,6 @@ void CelluliteFrame::onHello( wxCommandEvent& event )
 
 void CelluliteFrame::onPos1( wxCommandEvent& event )
 {
-  wxLogMessage( "POSITION 1 button clicked!" );
   for( const auto controller : m_controllerMap | std::views::values )
   {
     controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_1 );
@@ -138,7 +137,6 @@ void CelluliteFrame::onPos1( wxCommandEvent& event )
 
 void CelluliteFrame::onPos2( wxCommandEvent& event )
 {
-  wxLogMessage( "POSITION 2 button clicked!" );
   for( const auto controller : m_controllerMap | std::views::values )
   {
     controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_2 );
@@ -147,7 +145,6 @@ void CelluliteFrame::onPos2( wxCommandEvent& event )
 
 void CelluliteFrame::onReference( wxCommandEvent& event )
 {
-  wxLogMessage( "REFERENCE button clicked!" );
   for( const auto controller : m_controllerMap | std::views::values )
   {
     controller->referenceRun( AXIS::ONE );
