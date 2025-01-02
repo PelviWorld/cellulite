@@ -4,6 +4,8 @@
 
 #include "laingvalue.h"
 
+#include <functional>
+
 class MoveTecModBus;
 
 class LaingController final
@@ -23,6 +25,8 @@ class LaingController final
     ~LaingController();
 
     void setDevice( const std::string& device );
+
+    void setCallback( std::function< void() > callback );
 
     std::uint16_t getTableHeight( AXIS axis ) const;
 

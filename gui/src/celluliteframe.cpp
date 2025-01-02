@@ -3,6 +3,8 @@
 
 #include <ranges>
 
+wxDEFINE_EVENT( EVT_ENABLE_BUTTONS, wxCommandEvent );
+
 namespace
 {
   constexpr auto kWINDOW_WIDTH = 480;
@@ -42,21 +44,21 @@ void CelluliteFrame::createStartFrame()
 {
   auto* trainingButton = new wxButton( this, ID_TRAINING, "Start Training" );
   trainingButton->SetToolTip( "Start the trainings session" );
-  auto* pos1Button = new wxButton( this, ID_POS_1, "POSITION 1" );
-  pos1Button->SetToolTip( "Move to Position 1" );
-  auto* pos2Button = new wxButton( this, ID_POS_2, "POSITION 2" );
-  pos2Button->SetToolTip( "Move to Position 2" );
-  auto* referenceButton = new wxButton( this, ID_REFERENCE, "START REFERENCE RUN" );
-  referenceButton->SetToolTip( "Start the reference run" );
+  m_pos1Button = new wxButton( this, ID_POS_1, "POSITION 1" );
+  m_pos1Button->SetToolTip( "Move to Position 1" );
+  m_pos2Button = new wxButton( this, ID_POS_2, "POSITION 2" );
+  m_pos2Button->SetToolTip( "Move to Position 2" );
+  m_referenceButton = new wxButton( this, ID_REFERENCE, "START REFERENCE RUN" );
+  m_referenceButton->SetToolTip( "Start the reference run" );
 
   const auto bgColour = trainingButton->GetBackgroundColour();
   wxWindowBase::SetBackgroundColour( bgColour );
 
   auto* frameSizer = new wxBoxSizer( wxVERTICAL );
-  frameSizer->Add( pos1Button, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, kWIDGET_BORDER );
-  frameSizer->Add( pos2Button, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, kWIDGET_BORDER );
+  frameSizer->Add( m_pos1Button, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, kWIDGET_BORDER );
+  frameSizer->Add( m_pos2Button, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, kWIDGET_BORDER );
   frameSizer->AddStretchSpacer( 1 );
-  frameSizer->Add( referenceButton, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, kWIDGET_BORDER );
+  frameSizer->Add( m_referenceButton, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, kWIDGET_BORDER );
   frameSizer->Add( trainingButton, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, kWIDGET_BORDER );
   SetSizer( frameSizer );
 
@@ -65,12 +67,12 @@ void CelluliteFrame::createStartFrame()
   Bind( wxEVT_BUTTON, &CelluliteFrame::onReference, this, ID_REFERENCE );
   Bind( wxEVT_BUTTON, &CelluliteFrame::onTraining, this, ID_TRAINING );
 
-  pos1Button->Bind( wxEVT_ENTER_WINDOW, &CelluliteFrame::onHoverEnter, this );
-  pos1Button->Bind( wxEVT_LEAVE_WINDOW, &CelluliteFrame::onHoverLeave, this );
-  pos2Button->Bind( wxEVT_ENTER_WINDOW, &CelluliteFrame::onHoverEnter, this );
-  pos2Button->Bind( wxEVT_LEAVE_WINDOW, &CelluliteFrame::onHoverLeave, this );
-  referenceButton->Bind( wxEVT_ENTER_WINDOW, &CelluliteFrame::onHoverEnter, this );
-  referenceButton->Bind( wxEVT_LEAVE_WINDOW, &CelluliteFrame::onHoverLeave, this );
+  m_pos1Button->Bind( wxEVT_ENTER_WINDOW, &CelluliteFrame::onHoverEnter, this );
+  m_pos1Button->Bind( wxEVT_LEAVE_WINDOW, &CelluliteFrame::onHoverLeave, this );
+  m_pos2Button->Bind( wxEVT_ENTER_WINDOW, &CelluliteFrame::onHoverEnter, this );
+  m_pos2Button->Bind( wxEVT_LEAVE_WINDOW, &CelluliteFrame::onHoverLeave, this );
+  m_referenceButton->Bind( wxEVT_ENTER_WINDOW, &CelluliteFrame::onHoverEnter, this );
+  m_referenceButton->Bind( wxEVT_LEAVE_WINDOW, &CelluliteFrame::onHoverLeave, this );
   trainingButton->Bind( wxEVT_ENTER_WINDOW, &CelluliteFrame::onHoverEnter, this );
   trainingButton->Bind( wxEVT_LEAVE_WINDOW, &CelluliteFrame::onHoverLeave, this );
 }
@@ -85,6 +87,27 @@ CelluliteFrame::CelluliteFrame( const ControllerMap& controllerMap )
   createMenuBar();
   crateStatusBar();
   createStartFrame();
+
+  for( const auto& controller : m_controllerMap | std::views::values )
+  {
+    controller->setCallback( [ this ] { wxQueueEvent( this, new wxCommandEvent( EVT_ENABLE_BUTTONS ) ); } );
+  }
+
+  Bind( EVT_ENABLE_BUTTONS, &CelluliteFrame::enableButtons, this );
+}
+
+void CelluliteFrame::disableButtons()
+{
+  m_pos1Button->Disable();
+  m_pos2Button->Disable();
+  m_referenceButton->Disable();
+};
+
+void CelluliteFrame::enableButtons( wxCommandEvent& event )
+{
+  m_pos1Button->Enable();
+  m_pos2Button->Enable();
+  m_referenceButton->Enable();
 }
 
 void CelluliteFrame::onHoverEnter( wxMouseEvent& event )
@@ -129,6 +152,7 @@ void CelluliteFrame::onHello( wxCommandEvent& event )
 
 void CelluliteFrame::onPos1( wxCommandEvent& event )
 {
+  disableButtons();
   for( const auto controller : m_controllerMap | std::views::values )
   {
     controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_1 );
@@ -137,6 +161,7 @@ void CelluliteFrame::onPos1( wxCommandEvent& event )
 
 void CelluliteFrame::onPos2( wxCommandEvent& event )
 {
+  disableButtons();
   for( const auto controller : m_controllerMap | std::views::values )
   {
     controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_2 );
@@ -145,6 +170,7 @@ void CelluliteFrame::onPos2( wxCommandEvent& event )
 
 void CelluliteFrame::onReference( wxCommandEvent& event )
 {
+  disableButtons();
   for( const auto controller : m_controllerMap | std::views::values )
   {
     controller->referenceRun( AXIS::ONE );

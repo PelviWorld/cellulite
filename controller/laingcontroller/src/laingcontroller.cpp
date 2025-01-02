@@ -8,7 +8,6 @@
 #include "ltccontroller.h"
 
 #include <array>
-#include <functional>
 #include <iostream>
 #include <mutex>
 #include <thread>
@@ -89,6 +88,25 @@ class LaingController::Impl
       std::this_thread::sleep_for( std::chrono::milliseconds( kREGISTER_TIMEOUT ) );
     }
 
+    static void runInThread( std::function< void() > func )
+    {
+      std::thread( [ func ]() { func(); } ).detach();
+    }
+
+    void setCallback( std::function< void() > callback )
+    {
+      m_callback = std::move( callback );
+    }
+
+    void notifyCallback() const
+    {
+      if( m_callback )
+      {
+        m_callback();
+      }
+    }
+
+    // NOLINTBEGIN(*-non-private-member-variables-in-classes)
     std::shared_ptr< MoveTecModBus > modBus{ nullptr };
     std::unique_ptr< ILxcController > lxcController{ nullptr };
     std::uint16_t validity{ 0 };
@@ -121,13 +139,10 @@ class LaingController::Impl
     mutable std::mutex mtx;
     mutable std::condition_variable cv;
     mutable bool isRunning{ false };
-
-    void runInThread( std::function< void() > func )
-    {
-      std::thread( [ func ]() { func(); } ).detach();
-    }
-
+    // NOLINTEND(*-non-private-member-variables-in-classes)
   private:
+    std::function< void() > m_callback;
+
     void createController()
     {
       if( whoAmI == 0 )
@@ -171,6 +186,13 @@ void LaingController::setDevice( const std::string& device )
   }
   m_pImpl = std::make_unique< Impl >( device );
 }
+void LaingController::setCallback( std::function< void() > callback )
+{
+  if( m_pImpl )
+  {
+    m_pImpl->setCallback( std::move( callback ) );
+  }
+}
 
 void LaingController::moveToUserPosition( const AXIS axis, const USER_POSITION pos ) const
 {
@@ -185,6 +207,7 @@ void LaingController::moveToUserPosition( const AXIS axis, const USER_POSITION p
     std::lock_guard< std::mutex > lock( m_pImpl->mtx );
     m_pImpl->isRunning = false;
     m_pImpl->cv.notify_one();
+    m_pImpl->notifyCallback();
   } )
     .detach();
 }
@@ -202,6 +225,7 @@ void LaingController::referenceRun( const AXIS axis ) const
     std::lock_guard< std::mutex > lock( m_pImpl->mtx );
     m_pImpl->isRunning = false;
     m_pImpl->cv.notify_one();
+    m_pImpl->notifyCallback();
   } )
     .detach();
 }
