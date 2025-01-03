@@ -26,6 +26,8 @@ class ILxcController
 
     virtual void moveToUserPosition( AXIS axis, USER_POSITION pos ) const = 0;
     virtual void referenceRun( AXIS axis ) const = 0;
+    virtual void setMoveUpDown( AXIS axis, USER_POSITION user_position ) = 0;
+    virtual void setUpDownDisabled( AXIS axis ) const = 0;
     virtual std::uint16_t getTableHeight( AXIS axis ) const = 0;
 
     std::mutex& getMutex() const

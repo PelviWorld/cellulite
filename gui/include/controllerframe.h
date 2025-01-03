@@ -11,10 +11,11 @@ class ControllerFrame final : public wxPanel
 
     void onHoverEnter( wxMouseEvent& event );
     void onHoverLeave( wxMouseEvent& event );
-    void onPos1( wxCommandEvent& event );
-    void onPos2( wxCommandEvent& event );
-    void onReference( wxCommandEvent& event );
+    void onClicked( wxCommandEvent& event );
+    void onButtonPress( wxMouseEvent& event );
+    void onButtonRelease( wxMouseEvent& event );
     void enableButtons( wxCommandEvent& event );
+    void enableButtons();
     void disableButtons();
     void updateTableHeight();
 
@@ -22,11 +23,17 @@ class ControllerFrame final : public wxPanel
     void createButtons( int idOffset );
     void setBindingForReenablingButtons();
     void bindButtons( wxButton* button );
+    void bindButtonsPressAndRelease( wxButton* button );
+    void bindHoverEvents( wxButton* button );
+    void onTimer( wxTimerEvent& event );
 
     wxButton* m_pos1Button{ nullptr };
     wxButton* m_pos2Button{ nullptr };
     wxButton* m_referenceButton{ nullptr };
+    wxButton* m_moveUpButton{ nullptr };
+    wxButton* m_moveDownButton{ nullptr };
     wxStaticText* m_tableHeightLabel{ nullptr };
+    wxTimer m_timer;
 
     Controller m_controller;
 };

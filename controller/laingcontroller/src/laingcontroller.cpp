@@ -238,6 +238,20 @@ void LaingController::referenceRun( const AXIS axis ) const
   } )
     .detach();
 }
+void LaingController::setUpDownDisabled( AXIS axis ) const
+{
+  if( m_pImpl )
+  {
+    m_pImpl->lxcController->setUpDownDisabled( axis );
+  }
+}
+void LaingController::setMoveUpDown( AXIS axis, USER_POSITION move_direction ) const
+{
+  if( m_pImpl )
+  {
+    m_pImpl->lxcController->setMoveUpDown( axis, move_direction );
+  }
+}
 
 int LaingController::getSerialNumber() const
 {

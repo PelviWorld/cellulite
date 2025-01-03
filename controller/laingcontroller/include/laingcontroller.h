@@ -35,6 +35,10 @@ class LaingController final
 
     void referenceRun( AXIS axis ) const;
 
+    void setUpDownDisabled( AXIS axis ) const;
+
+    void setMoveUpDown( AXIS axis, USER_POSITION move_direction ) const;
+
     int getSerialNumber() const;
 
   private:

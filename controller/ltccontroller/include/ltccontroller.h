@@ -26,6 +26,10 @@ class LtcController final : public ILxcController
 
     uint16_t getTableHeight( AXIS axis ) const override;
 
+    void setUpDownDisabled( AXIS axis ) const override;
+
+    void setMoveUpDown( AXIS axis, USER_POSITION moveDirection ) override;
+
   private:
     class Impl;
     std::unique_ptr< Impl > m_pImpl;

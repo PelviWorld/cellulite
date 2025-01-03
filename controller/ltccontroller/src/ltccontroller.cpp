@@ -70,6 +70,19 @@ class LtcController::Impl
       modBus->readRegisters( static_cast< std::uint16_t >( LTC_REGISTER::SYSTEM_MODE ), value );
     }
 
+    void setUpDownDisabled() const
+    {
+      modBus->writeRegister( static_cast< uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ),
+        static_cast< std::uint16_t >( USER_POSITION::STOP ) );
+    }
+
+    void moveUpDown( USER_POSITION moveDirection ) const
+    {
+      std::array< std::uint16_t, 1 > value{ kDOWN };
+      modBus->writeRegister(
+        static_cast< uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ), static_cast< std::uint16_t >( moveDirection ) );
+    }
+
     uint16_t getTableHeight() const
     {
       std::array< uint16_t, 1 > value{ 0 };
@@ -102,4 +115,12 @@ void LtcController::referenceRun( AXIS /*axis*/ ) const
 uint16_t LtcController::getTableHeight( AXIS /*axis*/ ) const
 {
   return m_pImpl->getTableHeight();
+}
+void LtcController::setUpDownDisabled( AXIS axis ) const
+{
+  m_pImpl->setUpDownDisabled();
+}
+void LtcController::setMoveUpDown( AXIS axis, USER_POSITION moveDirection )
+{
+  m_pImpl->moveUpDown( moveDirection );
 }

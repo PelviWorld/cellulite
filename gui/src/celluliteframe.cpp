@@ -6,6 +6,8 @@ namespace
   constexpr auto kWINDOW_WIDTH = 480;
   constexpr auto kWINDOW_HEIGHT = 800;
   const std::string kAPP_NAME = "Cellulite APP";
+  constexpr auto kHEIGHT_ID_OFFSET = 0;
+  constexpr auto kWIDTH_ID_OFFSET = 100;
 }
 
 CelluliteFrame::CelluliteFrame( const ControllerMap& controllerMap )
@@ -25,19 +27,19 @@ CelluliteFrame::CelluliteFrame( const ControllerMap& controllerMap )
 
   if( controllerHeight != controllerMap.end() )
   {
-    m_heightFrame = new ControllerFrame( this, controllerHeight->second, 0 );
+    m_heightFrame = new ControllerFrame( this, controllerHeight->second, kHEIGHT_ID_OFFSET );
   }
   else
   {
-    m_heightFrame = new ControllerFrame( this, std::make_shared< LaingController >(), 0 );
+    m_heightFrame = new ControllerFrame( this, std::make_shared< LaingController >(), kHEIGHT_ID_OFFSET );
   }
   if( controllerWidth != controllerMap.end() )
   {
-    m_widthFrame = new ControllerFrame( this, controllerWidth->second, 100 );
+    m_widthFrame = new ControllerFrame( this, controllerWidth->second, kWIDTH_ID_OFFSET );
   }
   else
   {
-    m_widthFrame = new ControllerFrame( this, std::make_shared< LaingController >(), 100 );
+    m_widthFrame = new ControllerFrame( this, std::make_shared< LaingController >(), kWIDTH_ID_OFFSET );
   }
 
   auto* sizer = new wxBoxSizer( wxVERTICAL );
