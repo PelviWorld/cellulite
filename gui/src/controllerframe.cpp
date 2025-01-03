@@ -12,7 +12,11 @@ ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller
 {
   createButtons( idOffset );
 
+  m_tableHeightLabel = new wxStaticText( this, wxID_ANY, "Table Height:" );
+  updateTableHeight();
+
   auto* frameSizer = new wxBoxSizer( wxVERTICAL );
+  frameSizer->Add( m_tableHeightLabel, 0, wxALL, kBORDER );
   frameSizer->Add( m_pos1Button, 0, wxALL, kBORDER );
   frameSizer->Add( m_pos2Button, 0, wxALL, kBORDER );
   frameSizer->AddStretchSpacer( 1 );
@@ -106,6 +110,7 @@ void ControllerFrame::enableButtons( wxCommandEvent& event )
   m_pos1Button->Enable();
   m_pos2Button->Enable();
   m_referenceButton->Enable();
+  updateTableHeight();
 }
 
 void ControllerFrame::disableButtons()
@@ -113,4 +118,12 @@ void ControllerFrame::disableButtons()
   m_pos1Button->Disable();
   m_pos2Button->Disable();
   m_referenceButton->Disable();
+}
+void ControllerFrame::updateTableHeight()
+{
+  if( m_controller != nullptr )
+  {
+    const auto height = m_controller->getTableHeight( AXIS::ONE );
+    m_tableHeightLabel->SetLabel( wxString::Format( "Table Height: %d", height ) );
+  }
 }

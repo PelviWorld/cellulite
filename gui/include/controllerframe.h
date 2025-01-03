@@ -16,6 +16,7 @@ class ControllerFrame final : public wxPanel
     void onReference( wxCommandEvent& event );
     void enableButtons( wxCommandEvent& event );
     void disableButtons();
+    void updateTableHeight();
 
   private:
     void createButtons( int idOffset );
@@ -25,6 +26,7 @@ class ControllerFrame final : public wxPanel
     wxButton* m_pos1Button{ nullptr };
     wxButton* m_pos2Button{ nullptr };
     wxButton* m_referenceButton{ nullptr };
+    wxStaticText* m_tableHeightLabel{ nullptr };
 
     Controller m_controller;
 };
