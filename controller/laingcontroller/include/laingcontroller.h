@@ -9,7 +9,7 @@
 
 class MoveTecModBus;
 
-class LaingController final : public ILxcController
+class LaingController final
 {
   public:
     LaingController();

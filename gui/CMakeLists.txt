@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SOURCES
         src/celluliteapp.cpp
         src/celluliteframe.cpp
-        src/startframe.cpp
+        src/controllerframe.cpp
 )
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")

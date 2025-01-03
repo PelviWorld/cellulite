@@ -1,6 +1,6 @@
 #pragma once
 #include "controller.h"
-#include "startframe.h"
+#include "controllerframe.h"
 #include <wx/wx.h>
 
 enum
@@ -21,6 +21,6 @@ class CelluliteFrame final : public wxFrame
     void onExit( wxCommandEvent& event );
     void onAbout( wxCommandEvent& event );
 
-    StartFrame* m_heightFrame{ nullptr };
-    StartFrame* m_widthFrame{ nullptr };
+    ControllerFrame* m_heightFrame{ nullptr };
+    ControllerFrame* m_widthFrame{ nullptr };
 };

@@ -25,19 +25,19 @@ CelluliteFrame::CelluliteFrame( const ControllerMap& controllerMap )
 
   if( controllerHeight != controllerMap.end() )
   {
-    m_heightFrame = new StartFrame( this, controllerHeight->second, 0 );
+    m_heightFrame = new ControllerFrame( this, controllerHeight->second, 0 );
   }
   else
   {
-    m_heightFrame = new StartFrame( this, std::make_shared< LaingController >(), 0 );
+    m_heightFrame = new ControllerFrame( this, std::make_shared< LaingController >(), 0 );
   }
   if( controllerWidth != controllerMap.end() )
   {
-    m_widthFrame = new StartFrame( this, controllerWidth->second, 100 );
+    m_widthFrame = new ControllerFrame( this, controllerWidth->second, 100 );
   }
   else
   {
-    m_widthFrame = new StartFrame( this, std::make_shared< LaingController >(), 100 );
+    m_widthFrame = new ControllerFrame( this, std::make_shared< LaingController >(), 100 );
   }
 
   auto* sizer = new wxBoxSizer( wxVERTICAL );
