@@ -19,10 +19,15 @@ ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller
 
   auto* frameSizer = new wxBoxSizer( wxVERTICAL );
   frameSizer->Add( m_tableHeightLabel, 0, wxALL, kBORDER );
+  frameSizer->AddSpacer( 10 );
   frameSizer->Add( m_pos1Button, 0, wxALL, kBORDER );
   frameSizer->Add( m_pos2Button, 0, wxALL, kBORDER );
+  frameSizer->AddSpacer( 50 );
   frameSizer->Add( m_moveUpButton, 0, wxALL, kBORDER );
   frameSizer->Add( m_moveDownButton, 0, wxALL, kBORDER );
+  frameSizer->AddSpacer( 30 );
+  frameSizer->Add( m_savePos1Button, 0, wxALL, kBORDER );
+  frameSizer->Add( m_savePos2Button, 0, wxALL, kBORDER );
   frameSizer->AddStretchSpacer( 1 );
   frameSizer->Add( m_referenceButton, 0, wxALL, kBORDER );
 
@@ -43,12 +48,18 @@ void ControllerFrame::createButtons( const int idOffset )
   m_moveUpButton->SetToolTip( "Move up" );
   m_moveDownButton = new wxButton( this, wxID_ANY + idOffset + 4, "Move Down" );
   m_moveDownButton->SetToolTip( "Move down" );
+  m_savePos1Button = new wxButton( this, wxID_ANY + idOffset + 5, "Save Pos 1" );
+  m_savePos1Button->SetToolTip( "Save position 1" );
+  m_savePos2Button = new wxButton( this, wxID_ANY + idOffset + 6, "Save Pos 2" );
+  m_savePos2Button->SetToolTip( "Save position 2" );
 
   bindButtons( m_pos1Button );
   bindButtons( m_pos2Button );
   bindButtons( m_referenceButton );
   bindButtonsPressAndRelease( m_moveUpButton );
   bindButtonsPressAndRelease( m_moveDownButton );
+  bindButtons( m_savePos1Button );
+  bindButtons( m_savePos2Button );
 
   setBindingForReenablingButtons();
 }
@@ -129,6 +140,20 @@ void ControllerFrame::onClicked( wxCommandEvent& event )
       m_controller->referenceRun( AXIS::ONE );
     }
   }
+  else if( id == m_savePos1Button->GetId() )
+  {
+    if( m_controller != nullptr )
+    {
+      m_controller->saveUserPosition( AXIS::ONE, USER_POSITION::POS_1 );
+    }
+  }
+  else if( id == m_savePos2Button->GetId() )
+  {
+    if( m_controller != nullptr )
+    {
+      m_controller->saveUserPosition( AXIS::ONE, USER_POSITION::POS_2 );
+    }
+  }
 }
 
 void ControllerFrame::onButtonPress( wxMouseEvent& event )
@@ -184,6 +209,8 @@ void ControllerFrame::enableButtons()
   m_referenceButton->Enable();
   m_moveUpButton->Enable();
   m_moveDownButton->Enable();
+  m_savePos1Button->Enable();
+  m_savePos2Button->Enable();
   m_timer.Stop();
   updateTableHeight();
 }
@@ -200,6 +227,8 @@ void ControllerFrame::disableButtons()
   m_referenceButton->Disable();
   m_moveUpButton->Disable();
   m_moveDownButton->Disable();
+  m_savePos1Button->Disable();
+  m_savePos2Button->Disable();
 }
 
 void ControllerFrame::onTimer( wxTimerEvent& /*event*/ )

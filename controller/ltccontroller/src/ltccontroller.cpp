@@ -2,6 +2,8 @@
 #include "movetecmodbus.h"
 
 #include <array>
+#include <fstream>
+#include <iostream>
 #include <laingvalue.h>
 #include <ltcregister.h>
 #include <thread>
@@ -78,9 +80,37 @@ class LtcController::Impl
 
     void moveUpDown( USER_POSITION moveDirection ) const
     {
-      std::array< std::uint16_t, 1 > value{ kDOWN };
       modBus->writeRegister(
         static_cast< uint16_t >( LTC_REGISTER::KEYPRESS_CONTROL ), static_cast< std::uint16_t >( moveDirection ) );
+    }
+
+    uint16_t getUserPositionRegister( const USER_POSITION pos ) const
+    {
+      switch( pos )
+      {
+        case USER_POSITION::POS_1:
+          return static_cast< uint16_t >( LTC_REGISTER::USER_POSITION_1 );
+        case USER_POSITION::POS_2:
+          return static_cast< uint16_t >( LTC_REGISTER::USER_POSITION_2 );
+        case USER_POSITION::POS_3:
+          return static_cast< uint16_t >( LTC_REGISTER::USER_POSITION_3 );
+        case USER_POSITION::POS_4:
+          return static_cast< uint16_t >( LTC_REGISTER::USER_POSITION_4 );
+        default:
+          break;
+      }
+      return 0;
+    }
+
+    void saveUserPosition( const USER_POSITION pos ) const
+    {
+      const uint16_t address = getUserPositionRegister( pos );
+      if( address == 0 )
+      {
+        return;
+      }
+      const auto height = getTableHeight();
+      modBus->writeRegister( address, height );
     }
 
     uint16_t getTableHeight() const
@@ -116,11 +146,15 @@ uint16_t LtcController::getTableHeight( AXIS /*axis*/ ) const
 {
   return m_pImpl->getTableHeight();
 }
-void LtcController::setUpDownDisabled( AXIS axis ) const
+void LtcController::setUpDownDisabled( AXIS /*axis*/ ) const
 {
   m_pImpl->setUpDownDisabled();
 }
-void LtcController::setMoveUpDown( AXIS axis, USER_POSITION moveDirection )
+void LtcController::setMoveUpDown( AXIS /*axis*/, const USER_POSITION moveDirection )
 {
   m_pImpl->moveUpDown( moveDirection );
+}
+void LtcController::saveUserPosition( AXIS /*axis*/, const USER_POSITION pos ) const
+{
+  m_pImpl->saveUserPosition( pos );
 }

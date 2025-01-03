@@ -32,6 +32,8 @@ class ControllerFrame final : public wxPanel
     wxButton* m_referenceButton{ nullptr };
     wxButton* m_moveUpButton{ nullptr };
     wxButton* m_moveDownButton{ nullptr };
+    wxButton* m_savePos1Button{ nullptr };
+    wxButton* m_savePos2Button{ nullptr };
     wxStaticText* m_tableHeightLabel{ nullptr };
     wxTimer m_timer;
 

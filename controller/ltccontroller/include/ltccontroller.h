@@ -30,6 +30,8 @@ class LtcController final : public ILxcController
 
     void setMoveUpDown( AXIS axis, USER_POSITION moveDirection ) override;
 
+    void saveUserPosition( AXIS axis, USER_POSITION pos ) const override;
+
   private:
     class Impl;
     std::unique_ptr< Impl > m_pImpl;

@@ -31,13 +31,15 @@ class LaingController final
 
     std::uint16_t getTableHeight( AXIS axis ) const;
 
+    void saveUserPosition( AXIS axis, USER_POSITION pos ) const;
+
     void moveToUserPosition( AXIS axis, USER_POSITION pos ) const;
 
     void referenceRun( AXIS axis ) const;
 
     void setUpDownDisabled( AXIS axis ) const;
 
-    void setMoveUpDown( AXIS axis, USER_POSITION move_direction ) const;
+    void setMoveUpDown( AXIS axis, USER_POSITION moveDirection ) const;
 
     int getSerialNumber() const;
 

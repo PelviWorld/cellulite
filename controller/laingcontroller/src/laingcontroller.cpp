@@ -175,6 +175,13 @@ std::uint16_t LaingController::getTableHeight( const AXIS axis ) const
   }
   return 0;
 }
+void LaingController::saveUserPosition( AXIS axis, USER_POSITION pos ) const
+{
+  if( m_pImpl )
+  {
+    m_pImpl->lxcController->saveUserPosition( axis, pos );
+  }
+}
 
 LaingController::~LaingController() = default;
 
@@ -245,11 +252,11 @@ void LaingController::setUpDownDisabled( AXIS axis ) const
     m_pImpl->lxcController->setUpDownDisabled( axis );
   }
 }
-void LaingController::setMoveUpDown( AXIS axis, USER_POSITION move_direction ) const
+void LaingController::setMoveUpDown( AXIS axis, USER_POSITION moveDirection ) const
 {
   if( m_pImpl )
   {
-    m_pImpl->lxcController->setMoveUpDown( axis, move_direction );
+    m_pImpl->lxcController->setMoveUpDown( axis, moveDirection );
   }
 }
 
