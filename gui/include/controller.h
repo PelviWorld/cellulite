@@ -9,4 +9,5 @@ enum class ControllerAxis
   WIDTH,
 };
 
-using ControllerMap = std::unordered_map< ControllerAxis, std::shared_ptr< LaingController > >;
+using Controller = std::shared_ptr< LaingController >;
+using ControllerMap = std::unordered_map< ControllerAxis, Controller >;

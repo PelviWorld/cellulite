@@ -1,7 +1,8 @@
 #pragma once
 
 #include <laingvalue.h>
-#include <memory>
+#include <mutex>
+
 class MoveTecModBus;
 
 class ILxcController
@@ -23,9 +24,25 @@ class ILxcController
 
     ILxcController& operator=( ILxcController&& ) = delete;
 
-    virtual uint16_t getTableHeight( AXIS axis ) const = 0;
-
     virtual void moveToUserPosition( AXIS axis, USER_POSITION pos ) const = 0;
-
     virtual void referenceRun( AXIS axis ) const = 0;
+    virtual std::uint16_t getTableHeight( AXIS axis ) const = 0;
+
+    std::mutex& getMutex() const
+    {
+      return mtx;
+    }
+    std::condition_variable& getConditionVariable() const
+    {
+      return cv;
+    }
+    bool& getIsRunning() const
+    {
+      return isRunning;
+    }
+
+  protected:
+    mutable std::mutex mtx;
+    mutable std::condition_variable cv;
+    mutable bool isRunning{ false };
 };

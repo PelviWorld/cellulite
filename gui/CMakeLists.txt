@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SOURCES
         src/celluliteapp.cpp
         src/celluliteframe.cpp
+        src/startframe.cpp
 )
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -40,10 +41,10 @@ target_include_directories(${PROJECT_NAME}
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/cellulite.ini
+        ${CMAKE_CURRENT_SOURCE_DIR}/res/cellulite.ini
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/cellulite.ini
 )
 
 include(GNUInstallDirs)
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cellulite.ini DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/cellulite.ini DESTINATION ${CMAKE_INSTALL_BINDIR})

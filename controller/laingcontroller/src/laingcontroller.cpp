@@ -186,6 +186,7 @@ void LaingController::setDevice( const std::string& device )
   }
   m_pImpl = std::make_unique< Impl >( device );
 }
+
 void LaingController::setCallback( std::function< void() > callback )
 {
   if( m_pImpl )
@@ -196,17 +197,21 @@ void LaingController::setCallback( std::function< void() > callback )
 
 void LaingController::moveToUserPosition( const AXIS axis, const USER_POSITION pos ) const
 {
-  std::unique_lock< std::mutex > lock( m_pImpl->mtx );
-  if( m_pImpl->isRunning )
+  if( m_pImpl == nullptr )
+  {
+    return;
+  }
+  std::unique_lock< std::mutex > lock( m_pImpl->lxcController->getMutex() );
+  if( m_pImpl->lxcController->getIsRunning() )
   {
     return; // Discard the call if another operation is still running
   }
-  m_pImpl->isRunning = true;
+  m_pImpl->lxcController->getIsRunning() = true;
   std::thread( [ this, axis, pos ] {
     m_pImpl->lxcController->moveToUserPosition( axis, pos );
-    std::lock_guard< std::mutex > lock( m_pImpl->mtx );
-    m_pImpl->isRunning = false;
-    m_pImpl->cv.notify_one();
+    std::lock_guard< std::mutex > lock( m_pImpl->lxcController->getMutex() );
+    m_pImpl->lxcController->getIsRunning() = false;
+    m_pImpl->lxcController->getConditionVariable().notify_one();
     m_pImpl->notifyCallback();
   } )
     .detach();
@@ -214,17 +219,21 @@ void LaingController::moveToUserPosition( const AXIS axis, const USER_POSITION p
 
 void LaingController::referenceRun( const AXIS axis ) const
 {
-  std::unique_lock< std::mutex > lock( m_pImpl->mtx );
-  if( m_pImpl->isRunning )
+  if( m_pImpl == nullptr )
+  {
+    return;
+  }
+  std::unique_lock< std::mutex > lock( m_pImpl->lxcController->getMutex() );
+  if( m_pImpl->lxcController->getIsRunning() )
   {
     return; // Discard the call if another operation is still running
   }
-  m_pImpl->isRunning = true;
+  m_pImpl->lxcController->getIsRunning() = true;
   std::thread( [ this, axis ] {
     m_pImpl->lxcController->referenceRun( axis );
-    std::lock_guard< std::mutex > lock( m_pImpl->mtx );
-    m_pImpl->isRunning = false;
-    m_pImpl->cv.notify_one();
+    std::lock_guard< std::mutex > lock( m_pImpl->lxcController->getMutex() );
+    m_pImpl->lxcController->getIsRunning() = false;
+    m_pImpl->lxcController->getConditionVariable().notify_one();
     m_pImpl->notifyCallback();
   } )
     .detach();

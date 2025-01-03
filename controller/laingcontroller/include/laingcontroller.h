@@ -5,10 +5,11 @@
 #include "laingvalue.h"
 
 #include <functional>
+#include <ilxccontroller.h>
 
 class MoveTecModBus;
 
-class LaingController final
+class LaingController final : public ILxcController
 {
   public:
     LaingController();
