@@ -84,6 +84,11 @@ void CelluliteFrame::crateStatusBar()
   wxFrameBase::CreateStatusBar();
   wxFrameBase::SetStatusText( kAPP_NAME );
 }
+void CelluliteFrame::updateSaveButtons( const int value )
+{
+  m_heightFrame->updateSaveButtons( value );
+  m_widthFrame->updateSaveButtons( value );
+}
 
 void CelluliteFrame::onExit( wxCommandEvent& event )
 {

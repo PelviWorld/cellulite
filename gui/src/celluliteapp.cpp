@@ -1,12 +1,14 @@
 #include "celluliteapp.h"
 #include "INIReader.h"
-#include "celluliteframe.h"
 #include "utility.h"
 
 #include <array>
+#include <regex>
 
 namespace
 {
+  const std::string tilt = "Seat tilt: ";
+
   int getValue( const INIReader& reader, const std::string& section, const std::string& key )
   {
     const int value = reader.GetInteger( section, key, 0 );
@@ -43,13 +45,13 @@ namespace
     return result;
   }
 
-  void moveControllerToMap( const std::shared_ptr< LaingController >& controller,
+  bool moveControllerToMap( const std::shared_ptr< LaingController >& controller,
     const std::unordered_map< ControllerAxis, int >& serialConfig, ControllerMap& controllerMap )
   {
     const auto controllerSerial = controller->getSerialNumber();
     if( controllerSerial == 0 )
     {
-      return;
+      return false;
     }
 
     for( const auto& [ axis, serial ] : serialConfig )
@@ -57,27 +59,32 @@ namespace
       if( serial == controllerSerial )
       {
         controllerMap[ axis ] = controller;
-        return;
+        return true;
       }
     }
+    return false;
   }
 
-  void createControllerMap( const INIReader& reader, const std::unordered_map< ControllerAxis, int >& serialConfig,
-    ControllerMap& controllerMap )
+  std::vector< std::string > createControllerMap( const INIReader& reader,
+    const std::unordered_map< ControllerAxis, int >& serialConfig, ControllerMap& controllerMap )
   {
-    std::vector< std::string > comPorts = getAvailableComPorts( reader );
-    ;
+    const std::vector< std::string > comPorts = getAvailableComPorts( reader );
+    std::vector< std::string > remainingPorts;
     for( const auto& port : comPorts )
     {
-      moveControllerToMap( std::make_shared< LaingController >( port ), serialConfig, controllerMap );
+      if( moveControllerToMap( std::make_shared< LaingController >( port ), serialConfig, controllerMap ) == false )
+      {
+        remainingPorts.push_back( port );
+      }
     }
+    return remainingPorts;
   }
 
-  void createController( ControllerMap& controllerMap )
+  std::vector< std::string > createController( ControllerMap& controllerMap )
   {
     const auto reader = getReader( "cellulite.ini" );
     const auto serialConfig = readSerialConfig( reader );
-    createControllerMap( reader, serialConfig, controllerMap );
+    return createControllerMap( reader, serialConfig, controllerMap );
   }
 
 } // namespace
@@ -85,9 +92,10 @@ namespace
 bool CelluliteApp::OnInit()
 {
   ControllerMap controllerMap;
+  std::vector< std::string > ports;
   try
   {
-    createController( controllerMap );
+    ports = createController( controllerMap );
   }
   catch( std::runtime_error& /*e*/ )
   {
@@ -95,7 +103,74 @@ bool CelluliteApp::OnInit()
     exit( 1 );
   }
 
-  auto* frame = new CelluliteFrame( controllerMap );
-  frame->Show( true );
+  for( auto port : ports )
+  {
+    m_gyroCom = std::make_unique< GyroCom >( port );
+    if( m_gyroCom->verifyConnection() )
+    {
+      break;
+    }
+    m_gyroCom.reset();
+  }
+
+  m_frame = std::make_unique< CelluliteFrame >( controllerMap );
+  m_frame->Show( true );
+  SetTopWindow( m_frame.get() );
+
+  m_actualPitchLabel = new wxStaticText( m_frame.get(), wxID_ANY, tilt, wxPoint( 150, 5 ) );
+  readThread = std::thread( &CelluliteApp::readLoop, this );
+
   return true;
+}
+int CelluliteApp::OnExit()
+{
+  running = false;
+  if( readThread.joinable() )
+  {
+    readThread.join();
+  }
+  wxSleep( 1 );
+  return wxApp::OnExit();
+}
+
+void CelluliteApp::readDataFromPico()
+{
+  if( m_gyroCom == nullptr )
+  {
+    m_actualPitchLabel->SetLabel( "No gyro" );
+    return;
+  }
+  try
+  {
+    const std::string data = m_gyroCom->readData();
+    if( data.empty() || data[ 0 ] != 'P' )
+    {
+      return;
+    }
+    std::smatch match;
+    const std::regex numberRegex(
+      R"(Pitch:\s*(-?\d+))" ); // Regular expression to match a number at the end of the string
+
+    if( std::regex_search( data, match, numberRegex ) )
+    {
+      const std::string number = match.str( 1 ); // Extract the matched number
+      if( m_actualPitchLabel != nullptr )
+      {
+        m_actualPitchLabel->SetLabel( tilt + number );
+      }
+      m_frame->updateSaveButtons( std::abs( std::stoi( number ) ) );
+    }
+  }
+  catch( const std::exception& e )
+  {
+    std::cerr << "Exception in readDataFromPico: " << e.what() << std::endl;
+  }
+}
+void CelluliteApp::readLoop()
+{
+  while( running )
+  {
+    readDataFromPico();
+    std::this_thread::sleep_for( std::chrono::milliseconds( 150 ) );
+  }
 }

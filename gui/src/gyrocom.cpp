@@ -2,6 +2,7 @@
 #include "gyrocom.h"
 #include <chrono>
 #include <iostream>
+#include <regex>
 #include <stdexcept>
 #include <thread>
 
@@ -20,22 +21,46 @@ GyroCom::~GyroCom()
 {
   CloseHandle( hSerial );
 }
+bool GyroCom::verifyConnection()
+{
+  std::string data = readData();
+  if( data[ 0 ] != 'P' )
+  {
+    return false;
+  }
+  std::regex numberRegex( R"(Pitch:\s*(-?\d+))" );
+  return std::regex_search( data, numberRegex );
+}
 
 std::string GyroCom::readData()
 {
+  writeData( "P" );
   char buffer[ 256 ];
   DWORD bytesRead;
-  if( ReadFile( hSerial, buffer, sizeof( buffer ) - 1, &bytesRead, nullptr ) )
+  std::regex numberRegex( R"(Pitch:\s*(-?\d+))" );
+
+  while( true )
   {
-    buffer[ bytesRead ] = '\0';
-    std::cout << "Bytes read: " << bytesRead << std::endl; // Log the number of bytes read
-    std::cout << "Data: " << buffer << std::endl;          // Log the data read
-    return std::string( buffer );
+    if( ReadFile( hSerial, buffer, sizeof( buffer ) - 1, &bytesRead, nullptr ) )
+    {
+      buffer[ bytesRead ] = '\0';
+      std::string data( buffer );
+      return data;
+    }
+    else
+    {
+      std::cerr << "Error reading from serial port" << std::endl;
+      return "-";
+    }
   }
-  else
+}
+
+void GyroCom::writeData( const std::string& data )
+{
+  DWORD bytesWritten;
+  if( !WriteFile( hSerial, data.c_str(), data.size(), &bytesWritten, nullptr ) )
   {
-    std::cerr << "Error reading from serial port" << std::endl;
-    throw std::runtime_error( "Error reading from serial port" );
+    std::cerr << "Error writing to serial port" << std::endl;
   }
 }
 
@@ -52,6 +77,18 @@ void GyroCom::configurePort()
   dcbSerialParams.ByteSize = 8;
   dcbSerialParams.StopBits = ONESTOPBIT;
   dcbSerialParams.Parity = NOPARITY;
+  dcbSerialParams.fBinary = TRUE;
+  dcbSerialParams.fDtrControl = DTR_CONTROL_ENABLE;
+  dcbSerialParams.fDsrSensitivity = FALSE;
+  dcbSerialParams.fTXContinueOnXoff = FALSE;
+  dcbSerialParams.fOutX = FALSE;
+  dcbSerialParams.fInX = FALSE;
+  dcbSerialParams.fErrorChar = FALSE;
+  dcbSerialParams.fNull = FALSE;
+  dcbSerialParams.fRtsControl = RTS_CONTROL_ENABLE;
+  dcbSerialParams.fAbortOnError = FALSE;
+  dcbSerialParams.fOutxCtsFlow = FALSE;
+  dcbSerialParams.fOutxDsrFlow = FALSE;
 
   if( !SetCommState( hSerial, &dcbSerialParams ) )
   {

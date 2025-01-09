@@ -53,6 +53,9 @@ void ControllerFrame::createButtons( const int idOffset )
   m_savePos2Button = new wxButton( this, wxID_ANY + idOffset + 6, "Save Pos 2" );
   m_savePos2Button->SetToolTip( "Save position 2" );
 
+  m_savePos1Button->Disable();
+  m_savePos2Button->Disable();
+
   bindButtons( m_pos1Button );
   bindButtons( m_pos2Button );
   bindButtons( m_referenceButton );
@@ -209,8 +212,6 @@ void ControllerFrame::enableButtons()
   m_referenceButton->Enable();
   m_moveUpButton->Enable();
   m_moveDownButton->Enable();
-  m_savePos1Button->Enable();
-  m_savePos2Button->Enable();
   m_timer.Stop();
   updateTableHeight();
 }
@@ -227,8 +228,6 @@ void ControllerFrame::disableButtons()
   m_referenceButton->Disable();
   m_moveUpButton->Disable();
   m_moveDownButton->Disable();
-  m_savePos1Button->Disable();
-  m_savePos2Button->Disable();
 }
 
 void ControllerFrame::onTimer( wxTimerEvent& /*event*/ )
@@ -242,5 +241,28 @@ void ControllerFrame::updateTableHeight()
   {
     const auto height = m_controller->getTableHeight( AXIS::ONE );
     m_tableHeightLabel->SetLabel( wxString::Format( "Table Height: %d", height ) );
+  }
+}
+void ControllerFrame::updateSaveButtons( const int value )
+{
+  const auto button1 = ( ( 47 <= value ) && ( value <= 53 ) );
+  const auto button2 = ( ( 82 <= value ) && ( value <= 88 ) );
+
+  if( button1 )
+  {
+    m_savePos1Button->Enable();
+  }
+  else
+  {
+    m_savePos1Button->Disable();
+  }
+
+  if( button2 )
+  {
+    m_savePos2Button->Enable();
+  }
+  else
+  {
+    m_savePos2Button->Disable();
   }
 }
