@@ -15,7 +15,6 @@ class CelluliteFrame final : public wxFrame
 
     void createMenuBar();
     void crateStatusBar();
-    void updateSaveButtons( int value );
 
   private:
     void onHello( wxCommandEvent& event );

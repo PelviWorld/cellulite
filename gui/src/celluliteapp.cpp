@@ -158,7 +158,6 @@ void CelluliteApp::readDataFromPico()
       {
         m_actualPitchLabel->SetLabel( tilt + number );
       }
-      m_frame->updateSaveButtons( std::abs( std::stoi( number ) ) );
     }
   }
   catch( const std::exception& e )

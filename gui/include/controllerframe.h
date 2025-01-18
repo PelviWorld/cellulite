@@ -18,7 +18,6 @@ class ControllerFrame final : public wxPanel
     void enableButtons();
     void disableButtons();
     void updateTableHeight();
-    void updateSaveButtons( int value );
 
   private:
     void createButtons( int idOffset );
