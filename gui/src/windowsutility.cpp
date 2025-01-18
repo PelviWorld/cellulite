@@ -1,4 +1,4 @@
-#include "windowsutility.h"
+#include "utility.h"
 
 #include <array>
 #include <iostream>
