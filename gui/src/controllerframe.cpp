@@ -1,11 +1,16 @@
 #include "controllerframe.h"
+#include <winnt.h>
 
-#include <ranges>
+wxDEFINE_EVENT( EVT_ENABLE_BUTTONS, wxCommandEvent ); // NOLINT(readability-identifier-naming)
 
-wxDEFINE_EVENT( EVT_ENABLE_BUTTONS, wxCommandEvent );
-
-constexpr int kBORDER = 5;
-constexpr auto kPOLLING_INTERVAL = 100;
+namespace
+{
+  constexpr auto kBORDER = 5;
+  constexpr auto kPOLLING_INTERVAL = 100;
+  constexpr auto kSMALL_SPACER = 10;
+  constexpr auto kBIG_SPACER = 50;
+  constexpr auto kBUTTON_SPACER = 30;
+} // namespace
 
 ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller, const int idOffset )
   : wxPanel( parent )
@@ -19,13 +24,13 @@ ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller
 
   auto* frameSizer = new wxBoxSizer( wxVERTICAL );
   frameSizer->Add( m_tableHeightLabel, 0, wxALL, kBORDER );
-  frameSizer->AddSpacer( 10 );
+  frameSizer->AddSpacer( kSMALL_SPACER );
   frameSizer->Add( m_pos1Button, 0, wxALL, kBORDER );
   frameSizer->Add( m_pos2Button, 0, wxALL, kBORDER );
-  frameSizer->AddSpacer( 50 );
+  frameSizer->AddSpacer( kBIG_SPACER );
   frameSizer->Add( m_moveUpButton, 0, wxALL, kBORDER );
   frameSizer->Add( m_moveDownButton, 0, wxALL, kBORDER );
-  frameSizer->AddSpacer( 30 );
+  frameSizer->AddSpacer( kBUTTON_SPACER );
   frameSizer->Add( m_savePos1Button, 0, wxALL, kBORDER );
   frameSizer->Add( m_savePos2Button, 0, wxALL, kBORDER );
   frameSizer->AddStretchSpacer( 1 );
@@ -38,6 +43,7 @@ ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller
 
 void ControllerFrame::createButtons( const int idOffset )
 {
+  // NOLINTBEGIN(*-magic-numbers)
   m_pos1Button = new wxButton( this, wxID_ANY + idOffset, "Pos 1" );
   m_pos1Button->SetToolTip( "Move to position 1" );
   m_pos2Button = new wxButton( this, wxID_ANY + idOffset + 1, "Pos 2" );
@@ -52,6 +58,7 @@ void ControllerFrame::createButtons( const int idOffset )
   m_savePos1Button->SetToolTip( "Save position 1" );
   m_savePos2Button = new wxButton( this, wxID_ANY + idOffset + 6, "Save Pos 2" );
   m_savePos2Button->SetToolTip( "Save position 2" );
+  // NOLINTEND(*-magic-numbers)
 
   bindButtons( m_pos1Button );
   bindButtons( m_pos2Button );
@@ -158,24 +165,23 @@ void ControllerFrame::onClicked( wxCommandEvent& event )
 
 void ControllerFrame::onButtonPress( wxMouseEvent& event )
 {
+  if( m_controller == nullptr )
+  {
+    return;
+  }
+
   const int id = event.GetId();
   if( id == m_moveUpButton->GetId() )
   {
-    if( m_controller != nullptr )
-    {
-      m_controller->setMoveUpDown( AXIS::ONE, USER_POSITION::MOVE_UP );
-      disableButtons();
-      m_timer.Start( kPOLLING_INTERVAL );
-    }
+    m_controller->setMoveUpDown( AXIS::ONE, USER_POSITION::MOVE_UP );
+    disableButtons();
+    m_timer.Start( kPOLLING_INTERVAL );
   }
   else if( id == m_moveDownButton->GetId() )
   {
-    if( m_controller != nullptr )
-    {
-      m_controller->setMoveUpDown( AXIS::ONE, USER_POSITION::MOVE_DOWN );
-      disableButtons();
-      m_timer.Start( kPOLLING_INTERVAL );
-    }
+    m_controller->setMoveUpDown( AXIS::ONE, USER_POSITION::MOVE_DOWN );
+    disableButtons();
+    m_timer.Start( kPOLLING_INTERVAL );
   }
   event.Skip();
 }
@@ -183,21 +189,10 @@ void ControllerFrame::onButtonPress( wxMouseEvent& event )
 void ControllerFrame::onButtonRelease( wxMouseEvent& event )
 {
   const int id = event.GetId();
-  if( id == m_moveUpButton->GetId() )
+  if( m_controller && ( id == m_moveUpButton->GetId() || id == m_moveDownButton->GetId() ) )
   {
-    if( m_controller != nullptr )
-    {
-      m_controller->setUpDownDisabled( AXIS::ONE );
-      enableButtons();
-    }
-  }
-  else if( id == m_moveDownButton->GetId() )
-  {
-    if( m_controller != nullptr )
-    {
-      m_controller->setUpDownDisabled( AXIS::ONE );
-      enableButtons();
-    }
+    m_controller->setUpDownDisabled( AXIS::ONE );
+    enableButtons();
   }
   event.Skip();
 }

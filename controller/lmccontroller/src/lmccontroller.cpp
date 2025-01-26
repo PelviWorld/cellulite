@@ -3,6 +3,9 @@
 #include "lmcregister.h"
 #include "movetecmodbus.h"
 
+#include <array>
+#include <iostream>
+
 namespace
 {
   constexpr auto kMAX_USER_POSITIONS = 4;
@@ -40,15 +43,37 @@ class LmcController::Impl
 
     void moveToPosition( const AXIS axis, const USER_POSITION pos ) const
     {
+      modBus->writeRegister( 3016, 0 );
+      modBus->writeRegister( 3506, 0 );
     }
 
     void referenceRun( AXIS axis ) const
     {
+      modBus->writeRegister( 3016, 0 );
+      modBus->writeRegister( 3500, 6 );
+      modBus->writeRegister( 3504, 1 );
     }
 
     uint16_t getTableHeight( AXIS axis ) const
     {
-      return 0;
+      modBus->writeRegister( 3016, 0 );
+      std::array< uint16_t, 1 > value{ 0 };
+      modBus->readRegisters( 11503, value );
+      return value[ 0 ];
+    }
+
+    void setUpDownDisabled() const
+    {
+    }
+
+    void moveUpDown( USER_POSITION moveDirection ) const
+    {
+    }
+
+    void saveUserPosition( const USER_POSITION pos ) const
+    {
+      const uint16_t position = getTableHeight( AXIS::ONE );
+      std::cout << "Position: " << position << std::endl;
     }
 
     const std::shared_ptr< MoveTecModBus > modBus;
@@ -76,4 +101,16 @@ void LmcController::referenceRun( const AXIS axis ) const
 uint16_t LmcController::getTableHeight( const AXIS axis ) const
 {
   return m_pImpl->getTableHeight( axis );
+}
+void LmcController::setUpDownDisabled( AXIS /*axis*/ ) const
+{
+  m_pImpl->setUpDownDisabled();
+}
+void LmcController::setMoveUpDown( AXIS /*axis*/, const USER_POSITION moveDirection )
+{
+  m_pImpl->moveUpDown( moveDirection );
+}
+void LmcController::saveUserPosition( AXIS /*axis*/, const USER_POSITION pos ) const
+{
+  m_pImpl->saveUserPosition( pos );
 }

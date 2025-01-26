@@ -3,7 +3,6 @@
 
 #include <array>
 #include <fstream>
-#include <iostream>
 #include <laingvalue.h>
 #include <ltcregister.h>
 #include <thread>

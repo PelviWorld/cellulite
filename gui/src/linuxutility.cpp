@@ -1,4 +1,4 @@
-#include "linuxutility.h"
+#include "utility.h"
 
 #include <iostream>
 
