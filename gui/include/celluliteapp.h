@@ -24,7 +24,7 @@ class CelluliteApp final : public wxApp
 
     std::unique_ptr< CelluliteFrame > m_frame{ nullptr };
     std::unique_ptr< GyroCom > m_gyroCom;
-    wxStaticText* m_actualPitchLabel{ nullptr };
     std::thread readThread;
     std::atomic< bool > running{ true };
+    double m_pitch{ 0.0 };
 };

@@ -11,10 +11,8 @@ class GyroCom
     explicit GyroCom( const std::string& portName );
     ~GyroCom();
     bool verifyConnection();
-    std::string readData();
+    double readDouble();
 
   private:
-    HANDLE hSerial;
-    void writeData( const std::string& data );
-    void configurePort();
+    HANDLE m_hSerial;
 };
