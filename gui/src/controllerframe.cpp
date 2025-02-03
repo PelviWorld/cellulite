@@ -9,6 +9,17 @@ namespace
   constexpr auto kSMALL_SPACER = 10;
   constexpr auto kBIG_SPACER = 50;
   constexpr auto kBUTTON_SPACER = 30;
+  const wxPoint centerSeat( 243, 235 );
+
+  double degreesToRadians( double degrees )
+  {
+    return degrees * M_PI / 180.0;
+  }
+
+  wxImage rotateImage( wxImage* image, double angle )
+  {
+    return image->Rotate( degreesToRadians( angle ), wxPoint( image->GetWidth() / 2, image->GetHeight() / 2 ) );
+  }
 
   wxImage* createImage( wxWindow* parent, std::string imageName )
   {
@@ -21,16 +32,18 @@ namespace
     return image;
   }
 
-  wxBitmap* combineBitmaps( wxImage* bgImage, wxImage* seatImage, const wxPoint& overlayPosition )
+  wxBitmap* combineBitmaps( wxImage* bgImage, wxImage* seatImage, const wxPoint& centerOfSeatImage = centerSeat )
   {
     wxBitmap combinedBitmap( bgImage->GetWidth(), bgImage->GetHeight() );
     wxMemoryDC memDC( combinedBitmap );
 
+    auto rotatedSeatImage = rotateImage( seatImage, -10 );
     memDC.SetBrush( *wxWHITE_BRUSH );
     memDC.SetPen( *wxWHITE_PEN );
     memDC.DrawRectangle( 0, 0, bgImage->GetWidth(), bgImage->GetHeight() );
     memDC.DrawBitmap( wxBitmap( *bgImage ), 0, 0, true );
-    memDC.DrawBitmap( wxBitmap( *seatImage ), overlayPosition.x, overlayPosition.y, true );
+    memDC.DrawBitmap( wxBitmap( rotatedSeatImage ), centerOfSeatImage.x - rotatedSeatImage.GetWidth() / 2,
+      centerOfSeatImage.y - rotatedSeatImage.GetHeight() / 2, true );
     memDC.SelectObject( wxNullBitmap );
 
     wxImage combinedImage = combinedBitmap.ConvertToImage();
@@ -60,9 +73,10 @@ ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller
   m_trainerBgImage = createImage( imagePanel, "Trainer.png" );
   m_seatImage = createImage( imagePanel, "Seat.png" );
 
-  auto* combinedImage = combineBitmaps( m_trainerBgImage, m_seatImage, wxPoint( 204, 198 ) );
-  auto* combinedImageControl = new wxStaticBitmap( imagePanel, wxID_ANY, *combinedImage );
-  imageSizer->Add( combinedImageControl, 0, wxALIGN_CENTER | wxALL, kBORDER );
+  auto* combinedImage = combineBitmaps( m_trainerBgImage, m_seatImage );
+  m_combinedImageControl = new wxStaticBitmap( imagePanel, wxID_ANY, *combinedImage );
+
+  imageSizer->Add( m_combinedImageControl, 0, wxALIGN_CENTER | wxALL, kBORDER );
 
   auto* mainSizer = new wxBoxSizer( wxHORIZONTAL );
   auto* buttonSizer = new wxBoxSizer( wxVERTICAL );
@@ -283,5 +297,16 @@ void ControllerFrame::updateTableHeight()
   {
     const auto height = m_controller->getTableHeight( AXIS::ONE );
     m_tableHeightLabel->SetLabel( wxString::Format( "Table Height: %d", height ) );
+  }
+}
+
+void ControllerFrame::rotateSeatImage( double angle )
+{
+  if( m_seatImage && m_trainerBgImage )
+  {
+    wxImage rotatedSeatImage = rotateImage( m_seatImage, angle );
+    auto* combinedImage = combineBitmaps( m_trainerBgImage, &rotatedSeatImage );
+    m_combinedImageControl->SetBitmap( *combinedImage );
+    m_combinedImageControl->Refresh();
   }
 }

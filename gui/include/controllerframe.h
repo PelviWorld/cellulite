@@ -18,6 +18,7 @@ class ControllerFrame final : public wxPanel
     void enableButtons();
     void disableButtons();
     void updateTableHeight();
+    void rotateSeatImage( double angle );
 
   private:
     void createButtons( int idOffset );
@@ -41,4 +42,5 @@ class ControllerFrame final : public wxPanel
 
     wxImage* m_trainerBgImage{ nullptr };
     wxImage* m_seatImage{ nullptr };
+    wxStaticBitmap* m_combinedImageControl{ nullptr };
 };
