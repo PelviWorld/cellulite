@@ -7,7 +7,6 @@ namespace
   constexpr auto kWINDOW_HEIGHT = 800;
   const std::string kAPP_NAME = "Cellulite APP";
   constexpr auto kHEIGHT_ID_OFFSET = 0;
-  constexpr auto kWIDTH_ID_OFFSET = 100;
 }
 
 CelluliteFrame::CelluliteFrame( const ControllerMap& controllerMap )
@@ -20,10 +19,6 @@ CelluliteFrame::CelluliteFrame( const ControllerMap& controllerMap )
   crateStatusBar();
 
   const auto controllerHeight = controllerMap.find( ControllerAxis::HEIGHT );
-  const auto controllerWidth = controllerMap.find( ControllerAxis::WIDTH );
-
-  auto* headerLabel1 = new wxStaticText( this, wxID_ANY, "Height Control" );
-  auto* headerLabel2 = new wxStaticText( this, wxID_ANY, "Width Control" );
 
   if( controllerHeight != controllerMap.end() )
   {
@@ -33,24 +28,12 @@ CelluliteFrame::CelluliteFrame( const ControllerMap& controllerMap )
   {
     m_heightFrame = new ControllerFrame( this, std::make_shared< LaingController >(), kHEIGHT_ID_OFFSET );
   }
-  if( controllerWidth != controllerMap.end() )
-  {
-    m_widthFrame = new ControllerFrame( this, controllerWidth->second, kWIDTH_ID_OFFSET );
-  }
-  else
-  {
-    m_widthFrame = new ControllerFrame( this, std::make_shared< LaingController >(), kWIDTH_ID_OFFSET );
-  }
 
   auto* sizer = new wxBoxSizer( wxVERTICAL );
   auto* headerSizer = new wxBoxSizer( wxHORIZONTAL );
   auto* frameSizer = new wxBoxSizer( wxHORIZONTAL );
 
-  headerSizer->Add( headerLabel1, 1, wxALL | wxALIGN_CENTER, 5 );
-  headerSizer->Add( headerLabel2, 1, wxALL | wxALIGN_CENTER, 5 );
-
   frameSizer->Add( m_heightFrame, 1, wxEXPAND | wxALL, 5 );
-  frameSizer->Add( m_widthFrame, 1, wxEXPAND | wxALL, 5 );
 
   sizer->Add( headerSizer, 0, wxEXPAND );
   sizer->Add( frameSizer, 1, wxEXPAND );
