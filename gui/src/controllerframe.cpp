@@ -1,5 +1,4 @@
 #include "controllerframe.h"
-#include <winnt.h>
 
 wxDEFINE_EVENT( EVT_ENABLE_BUTTONS, wxCommandEvent ); // NOLINT(readability-identifier-naming)
 
@@ -10,6 +9,37 @@ namespace
   constexpr auto kSMALL_SPACER = 10;
   constexpr auto kBIG_SPACER = 50;
   constexpr auto kBUTTON_SPACER = 30;
+
+  wxImage* createImage( wxWindow* parent, std::string imageName )
+  {
+    auto* image = new wxImage( imageName, wxBITMAP_TYPE_PNG );
+    if( image->IsOk() )
+    {
+      image->SetMaskColour( 255, 255, 255 );
+      image->InitAlpha();
+    }
+    return image;
+  }
+
+  wxBitmap* combineBitmaps( wxImage* bgImage, wxImage* seatImage, const wxPoint& overlayPosition )
+  {
+    wxBitmap combinedBitmap( bgImage->GetWidth(), bgImage->GetHeight() );
+    wxMemoryDC memDC( combinedBitmap );
+
+    memDC.SetBrush( *wxWHITE_BRUSH );
+    memDC.SetPen( *wxWHITE_PEN );
+    memDC.DrawRectangle( 0, 0, bgImage->GetWidth(), bgImage->GetHeight() );
+    memDC.DrawBitmap( wxBitmap( *bgImage ), 0, 0, true );
+    memDC.DrawBitmap( wxBitmap( *seatImage ), overlayPosition.x, overlayPosition.y, true );
+    memDC.SelectObject( wxNullBitmap );
+
+    wxImage combinedImage = combinedBitmap.ConvertToImage();
+    combinedImage.SetMaskColour( 255, 255, 255 );
+    combinedImage.InitAlpha();
+
+    return new wxBitmap( combinedImage );
+  }
+
 } // namespace
 
 ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller, const int idOffset )
@@ -22,21 +52,37 @@ ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller
   m_tableHeightLabel = new wxStaticText( this, wxID_ANY, "Table Height:" );
   updateTableHeight();
 
-  auto* frameSizer = new wxBoxSizer( wxVERTICAL );
-  frameSizer->Add( m_tableHeightLabel, 0, wxALL, kBORDER );
-  frameSizer->AddSpacer( kSMALL_SPACER );
-  frameSizer->Add( m_pos1Button, 0, wxALL, kBORDER );
-  frameSizer->Add( m_pos2Button, 0, wxALL, kBORDER );
-  frameSizer->AddSpacer( kBIG_SPACER );
-  frameSizer->Add( m_moveUpButton, 0, wxALL, kBORDER );
-  frameSizer->Add( m_moveDownButton, 0, wxALL, kBORDER );
-  frameSizer->AddSpacer( kBUTTON_SPACER );
-  frameSizer->Add( m_savePos1Button, 0, wxALL, kBORDER );
-  frameSizer->Add( m_savePos2Button, 0, wxALL, kBORDER );
-  frameSizer->AddStretchSpacer( 1 );
-  frameSizer->Add( m_referenceButton, 0, wxALL, kBORDER );
+  auto* imagePanel = new wxPanel( this, wxID_ANY );
+  auto* imageSizer = new wxBoxSizer( wxVERTICAL );
+  imagePanel->SetSizer( imageSizer );
 
-  SetSizerAndFit( frameSizer );
+  wxImage::AddHandler( new wxPNGHandler );
+  m_trainerBgImage = createImage( imagePanel, "Trainer.png" );
+  m_seatImage = createImage( imagePanel, "Seat.png" );
+
+  auto* combinedImage = combineBitmaps( m_trainerBgImage, m_seatImage, wxPoint( 204, 198 ) );
+  auto* combinedImageControl = new wxStaticBitmap( imagePanel, wxID_ANY, *combinedImage );
+  imageSizer->Add( combinedImageControl, 0, wxALIGN_CENTER | wxALL, kBORDER );
+
+  auto* mainSizer = new wxBoxSizer( wxHORIZONTAL );
+  auto* buttonSizer = new wxBoxSizer( wxVERTICAL );
+  mainSizer->Add( imagePanel, 1, wxALIGN_TOP | wxALL, kBORDER );
+
+  buttonSizer->Add( m_tableHeightLabel, 0, wxALL, kBORDER );
+  buttonSizer->AddSpacer( kSMALL_SPACER );
+  buttonSizer->Add( m_pos1Button, 0, wxALL, kBORDER );
+  buttonSizer->Add( m_pos2Button, 0, wxALL, kBORDER );
+  buttonSizer->AddSpacer( kBIG_SPACER );
+  buttonSizer->Add( m_moveUpButton, 0, wxALL, kBORDER );
+  buttonSizer->Add( m_moveDownButton, 0, wxALL, kBORDER );
+  buttonSizer->AddSpacer( kBUTTON_SPACER );
+  buttonSizer->Add( m_savePos1Button, 0, wxALL, kBORDER );
+  buttonSizer->Add( m_savePos2Button, 0, wxALL, kBORDER );
+  buttonSizer->AddStretchSpacer( 1 );
+  buttonSizer->Add( m_referenceButton, 0, wxALL, kBORDER );
+
+  mainSizer->Add( buttonSizer, 0, wxEXPAND | wxALL, kBORDER );
+  SetSizerAndFit( mainSizer );
 
   Bind( wxEVT_TIMER, &ControllerFrame::onTimer, this, m_timer.GetId() );
 }

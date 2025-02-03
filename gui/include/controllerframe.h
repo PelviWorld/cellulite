@@ -38,4 +38,7 @@ class ControllerFrame final : public wxPanel
     wxTimer m_timer;
 
     Controller m_controller;
+
+    wxImage* m_trainerBgImage{ nullptr };
+    wxImage* m_seatImage{ nullptr };
 };
