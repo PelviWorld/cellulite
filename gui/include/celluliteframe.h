@@ -22,5 +22,4 @@ class CelluliteFrame final : public wxFrame
     void onAbout( wxCommandEvent& event );
 
     ControllerFrame* m_heightFrame{ nullptr };
-    ControllerFrame* m_widthFrame{ nullptr };
 };
