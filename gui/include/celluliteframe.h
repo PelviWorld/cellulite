@@ -15,6 +15,7 @@ class CelluliteFrame final : public wxFrame
 
     void createMenuBar();
     void crateStatusBar();
+    void setPitch( double pitch );
 
   private:
     void onHello( wxCommandEvent& event );

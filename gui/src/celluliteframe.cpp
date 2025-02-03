@@ -68,6 +68,11 @@ void CelluliteFrame::crateStatusBar()
   wxFrameBase::SetStatusText( kAPP_NAME );
 }
 
+void CelluliteFrame::setPitch( double pitch )
+{
+  m_heightFrame->rotateSeatImage( pitch );
+}
+
 void CelluliteFrame::onExit( wxCommandEvent& event )
 {
   Close( true );
