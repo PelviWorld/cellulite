@@ -9,6 +9,7 @@ set(SOURCES
         src/celluliteapp.cpp
         src/celluliteframe.cpp
         src/controllerframe.cpp
+        src/configreader.cpp
 )
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
