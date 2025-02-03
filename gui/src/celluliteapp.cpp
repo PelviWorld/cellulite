@@ -8,28 +8,10 @@ const std::string tilt = "Seat tilt: ";
 bool CelluliteApp::OnInit()
 {
   ControllerMap controllerMap;
-  std::vector< std::string > ports;
-  try
-  {
-    ports = createController( controllerMap );
-  }
-  catch( std::runtime_error& /*e*/ )
-  {
-    std::cout << "Failed to load configuration file: " << std::endl;
-    exit( 1 );
-  }
-
-  for( auto port : ports )
-  {
-    m_gyroCom = std::make_unique< GyroCom >( port );
-    if( m_gyroCom->verifyConnection() )
-    {
-      break;
-    }
-    m_gyroCom.reset();
-  }
-
+  auto remainingPorts = createControllerMapAndReturnRemainingPorts( controllerMap );
+  m_gyroCom = createGyro( remainingPorts );
   m_frame = std::make_unique< CelluliteFrame >( controllerMap );
+
   m_frame->Show( true );
   SetTopWindow( m_frame.get() );
 

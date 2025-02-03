@@ -74,3 +74,29 @@ std::vector< std::string > createController( ControllerMap& controllerMap )
   const auto serialConfig = readSerialConfig( reader );
   return createControllerMap( reader, serialConfig, controllerMap );
 }
+
+std::vector< std::string > createControllerMapAndReturnRemainingPorts( ControllerMap& controllerMap )
+{
+  try
+  {
+    return createController( controllerMap );
+  }
+  catch( std::runtime_error& /*e*/ )
+  {
+    std::cout << "Failed to load configuration file: " << std::endl;
+    exit( 1 );
+  }
+}
+
+std::unique_ptr< GyroCom > createGyro( std::vector< std::string >& ports )
+{
+  for( auto port : ports )
+  {
+    auto gyroCom = std::make_unique< GyroCom >( port );
+    if( gyroCom->verifyConnection() )
+    {
+      return gyroCom;
+    }
+  }
+  return nullptr;
+}
