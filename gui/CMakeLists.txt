@@ -45,7 +45,19 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${CMAKE_CURRENT_SOURCE_DIR}/res/cellulite.ini
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/cellulite.ini
 )
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/res/Trainer.png
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Trainer.png
+)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/res/Seat.png
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Seat.png
+)
 
 include(GNUInstallDirs)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/cellulite.ini DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/Trainer.png DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/Seat.png DESTINATION ${CMAKE_INSTALL_BINDIR})
