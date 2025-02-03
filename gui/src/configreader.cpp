@@ -29,13 +29,7 @@ std::unordered_map< ControllerAxis, int > readSerialConfig( const INIReader& rea
 {
   std::unordered_map< ControllerAxis, int > result;
 
-  result[ ControllerAxis::WIDTH ] = getValue( reader, "SERIAL", "width" );
   result[ ControllerAxis::HEIGHT ] = getValue( reader, "SERIAL", "height" );
-  if( result.at( ControllerAxis::WIDTH ) == result.at( ControllerAxis::HEIGHT ) )
-  {
-    std::cerr << "Serial numbers are the same" << std::endl;
-    throw std::runtime_error( "Serial numbers are the same" );
-  }
   return result;
 }
 
