@@ -53,6 +53,12 @@ namespace
     return new wxBitmap( combinedImage );
   }
 
+  bool angleChangedToForceRedraw( double angle )
+  {
+    static int oldAngle = 0;
+    return std::abs( oldAngle - static_cast< int >( angle ) ) > 1;
+  }
+
 } // namespace
 
 ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller, const int idOffset )
@@ -303,12 +309,15 @@ void ControllerFrame::updateTableHeight()
 void ControllerFrame::rotateSeatImage( double angle )
 {
   static int oldAngle = 0;
-  if( m_seatImage && m_trainerBgImage && std::abs( oldAngle - static_cast< int >( angle ) ) > 1 )
+  if( angleChangedToForceRedraw( angle ) )
   {
     wxImage rotatedSeatImage = rotateImage( m_seatImage, angle );
     auto* combinedImage = combineBitmaps( m_trainerBgImage, &rotatedSeatImage );
     m_combinedImageControl->SetBitmap( *combinedImage );
-    m_combinedImageControl->Refresh();
-    oldAngle = static_cast< int >( angle );
+
+    wxRect invalidRect( centerSeat.x - m_seatImage->GetWidth() / 2, centerSeat.y - m_seatImage->GetHeight() / 2,
+      m_seatImage->GetWidth(), m_seatImage->GetHeight() );
+    invalidRect.Inflate( 10 );
+    m_combinedImageControl->RefreshRect( invalidRect );
   }
 }
