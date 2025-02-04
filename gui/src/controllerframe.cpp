@@ -1,6 +1,8 @@
 #include "controllerframe.h"
 
-wxDEFINE_EVENT( EVT_ENABLE_BUTTONS, wxCommandEvent ); // NOLINT(readability-identifier-naming)
+#include <wx/dcbuffer.h>
+
+wxDEFINE_EVENT( EVT_ENABLE_BUTTONS, wxCommandEvent );
 
 namespace
 {
@@ -56,7 +58,7 @@ namespace
   bool angleChangedToForceRedraw( double angle )
   {
     static int oldAngle = 0;
-    return std::abs( oldAngle - static_cast< int >( angle ) ) > 2;
+    return std::abs( oldAngle - static_cast< int >( angle ) ) > 0;
   }
 
 } // namespace
@@ -69,27 +71,22 @@ wxBEGIN_EVENT_TABLE( ControllerFrame, wxPanel ) EVT_PAINT( ControllerFrame::onPa
   , m_timer( this, wxID_ANY )
 {
   createButtons( idOffset );
+  SetBackgroundStyle( wxBG_STYLE_PAINT );
 
   m_tableHeightLabel = new wxStaticText( this, wxID_ANY, "Table Height:" );
   updateTableHeight();
 
-  auto* imagePanel = new wxPanel( this, wxID_ANY );
-  auto* imageSizer = new wxBoxSizer( wxVERTICAL );
-  imagePanel->SetSizer( imageSizer );
+  m_imagePanel = new wxPanel( this, wxID_ANY );
+  m_imagePanel->SetBackgroundStyle( wxBG_STYLE_PAINT );
 
   wxImage::AddHandler( new wxPNGHandler );
-  m_trainerBgImage = createImage( imagePanel, "Trainer.png", false );
-  m_seatImage = createImage( imagePanel, "Seat.png" );
+  m_trainerBgImage = createImage( m_imagePanel, "Trainer.png", false );
+  m_seatImage = createImage( m_imagePanel, "Seat.png" );
   m_rotatedSeatImage = rotateImage( m_seatImage, 0 );
-
-  auto* combinedImage = combineBitmaps( m_trainerBgImage, m_seatImage );
-  m_combinedImageControl = new wxStaticBitmap( imagePanel, wxID_ANY, *combinedImage );
-
-  imageSizer->Add( m_combinedImageControl, 0, wxALIGN_CENTER | wxALL, kBORDER );
 
   auto* mainSizer = new wxBoxSizer( wxHORIZONTAL );
   auto* buttonSizer = new wxBoxSizer( wxVERTICAL );
-  mainSizer->Add( imagePanel, 1, wxALIGN_TOP | wxALL, kBORDER );
+  mainSizer->Add( m_imagePanel, 1, wxALIGN_TOP | wxALL, kBORDER );
 
   buttonSizer->Add( m_tableHeightLabel, 0, wxALL, kBORDER );
   buttonSizer->AddSpacer( kSMALL_SPACER );
@@ -325,9 +322,9 @@ void ControllerFrame::rotateSeatImage( double angle )
 
 void ControllerFrame::onPaint( wxPaintEvent& /*event*/ )
 {
-  wxPaintDC dc( this );
+  wxAutoBufferedPaintDC dc( this );
   dc.SetBackground( *wxWHITE_BRUSH );
   dc.Clear();
   auto* combinedImage = combineBitmaps( m_trainerBgImage, &m_rotatedSeatImage );
-  m_combinedImageControl->SetBitmap( *combinedImage );
+  dc.DrawBitmap( *combinedImage, 0, 0, true );
 }
