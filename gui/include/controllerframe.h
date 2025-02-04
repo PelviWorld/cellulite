@@ -27,6 +27,7 @@ class ControllerFrame final : public wxPanel
     void bindButtonsPressAndRelease( wxButton* button );
     void bindHoverEvents( wxButton* button );
     void onTimer( wxTimerEvent& event );
+    void onPaint( wxPaintEvent& event );
 
     wxButton* m_pos1Button{ nullptr };
     wxButton* m_pos2Button{ nullptr };
@@ -43,4 +44,6 @@ class ControllerFrame final : public wxPanel
     wxImage* m_trainerBgImage{ nullptr };
     wxImage* m_seatImage{ nullptr };
     wxStaticBitmap* m_combinedImageControl{ nullptr };
+
+    wxDECLARE_EVENT_TABLE();
 };

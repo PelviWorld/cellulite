@@ -56,12 +56,14 @@ namespace
   bool angleChangedToForceRedraw( double angle )
   {
     static int oldAngle = 0;
-    return std::abs( oldAngle - static_cast< int >( angle ) ) > 1;
+    return std::abs( oldAngle - static_cast< int >( angle ) ) > 2;
   }
 
 } // namespace
 
-ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller, const int idOffset )
+wxBEGIN_EVENT_TABLE( ControllerFrame, wxPanel ) EVT_PAINT( ControllerFrame::onPaint ) wxEND_EVENT_TABLE()
+
+  ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller, const int idOffset )
   : wxPanel( parent )
   , m_controller( controller )
   , m_timer( this, wxID_ANY )
@@ -308,7 +310,6 @@ void ControllerFrame::updateTableHeight()
 
 void ControllerFrame::rotateSeatImage( double angle )
 {
-  static int oldAngle = 0;
   if( angleChangedToForceRedraw( angle ) )
   {
     wxImage rotatedSeatImage = rotateImage( m_seatImage, angle );
@@ -317,7 +318,13 @@ void ControllerFrame::rotateSeatImage( double angle )
 
     wxRect invalidRect( centerSeat.x - m_seatImage->GetWidth() / 2, centerSeat.y - m_seatImage->GetHeight() / 2,
       m_seatImage->GetWidth(), m_seatImage->GetHeight() );
-    invalidRect.Inflate( 10 );
     m_combinedImageControl->RefreshRect( invalidRect );
   }
+}
+
+void ControllerFrame::onPaint( wxPaintEvent& /*event*/ )
+{
+  wxPaintDC dc( this );
+  dc.SetBackground( *wxWHITE_BRUSH );
+  dc.Clear();
 }

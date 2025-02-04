@@ -101,6 +101,9 @@ void CelluliteFrame::onPaint( wxPaintEvent& event )
   dc.Clear();
 
   wxRegion updateRegion = GetUpdateRegion();
+  wxRect controllerFrameRect = m_heightFrame->GetRect();
+  updateRegion.Subtract( controllerFrameRect );
+
   wxRect updateRect = updateRegion.GetBox();
 
   dc.SetBrush( *wxWHITE_BRUSH );
