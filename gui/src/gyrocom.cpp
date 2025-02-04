@@ -2,7 +2,6 @@
 #include <chrono>
 #include <iostream>
 #include <regex>
-#include <thread>
 
 namespace
 {
@@ -15,37 +14,49 @@ namespace
     }
   }
 
+  std::string readBuffer( DWORD bytesRead, char* buffer )
+  {
+    buffer[ bytesRead ] = '\0';
+    std::string data( buffer );
+    return data;
+  }
+
+  std::string readFailed()
+  {
+    std::cerr << "Error reading from serial port" << std::endl;
+    return "-";
+  }
+
   std::string readData( HANDLE hSerial )
   {
-    writeData( hSerial, "P" );
     char buffer[ 256 ];
     DWORD bytesRead;
 
-    while( true )
+    writeData( hSerial, "P" );
+
+    if( ReadFile( hSerial, buffer, sizeof( buffer ) - 1, &bytesRead, nullptr ) )
     {
-      if( ReadFile( hSerial, buffer, sizeof( buffer ) - 1, &bytesRead, nullptr ) )
-      {
-        buffer[ bytesRead ] = '\0';
-        std::string data( buffer );
-        return data;
-      }
-      else
-      {
-        std::cerr << "Error reading from serial port" << std::endl;
-        return "-";
-      }
+      return readBuffer( bytesRead, buffer );
+    }
+    else
+    {
+      return readFailed();
     }
   }
 
-  void configurePort( HANDLE hSerial )
+  DCB getSerialParams( HANDLE hSerial )
   {
     DCB dcbSerialParams = { 0 };
-    dcbSerialParams.DCBlength = sizeof( dcbSerialParams );
     if( !GetCommState( hSerial, &dcbSerialParams ) )
     {
       throw std::runtime_error( "Error getting serial port state" );
     }
+    return dcbSerialParams;
+  }
 
+  void dcbSetGyroParameters( DCB& dcbSerialParams )
+  {
+    dcbSerialParams.DCBlength = sizeof( dcbSerialParams );
     dcbSerialParams.BaudRate = CBR_9600;
     dcbSerialParams.ByteSize = 8;
     dcbSerialParams.StopBits = ONESTOPBIT;
@@ -62,21 +73,41 @@ namespace
     dcbSerialParams.fAbortOnError = FALSE;
     dcbSerialParams.fOutxCtsFlow = FALSE;
     dcbSerialParams.fOutxDsrFlow = FALSE;
+  }
 
+  void setCommState( HANDLE hSerial, DCB& dcbSerialParams )
+  {
     if( !SetCommState( hSerial, &dcbSerialParams ) )
     {
       throw std::runtime_error( "Error setting serial port state" );
     }
+  }
 
+  COMMTIMEOUTS gyroTimeouts()
+  {
     COMMTIMEOUTS timeouts = { 0 };
     timeouts.ReadIntervalTimeout = 50;
     timeouts.ReadTotalTimeoutConstant = 50;
     timeouts.ReadTotalTimeoutMultiplier = 10;
+    return timeouts;
+  }
 
+  void setCommTimeouts( HANDLE hSerial, COMMTIMEOUTS& timeouts )
+  {
     if( !SetCommTimeouts( hSerial, &timeouts ) )
     {
       throw std::runtime_error( "Error setting serial port timeouts" );
     }
+  }
+
+  void configurePort( HANDLE hSerial )
+  {
+    auto dcbSerialParams = getSerialParams( hSerial );
+    auto timeouts = gyroTimeouts();
+
+    dcbSetGyroParameters( dcbSerialParams );
+    setCommState( hSerial, dcbSerialParams );
+    setCommTimeouts( hSerial, timeouts );
   }
 } // namespace
 
