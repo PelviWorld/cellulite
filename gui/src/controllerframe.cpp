@@ -188,44 +188,34 @@ void ControllerFrame::onHoverLeave( wxMouseEvent& event )
 
 void ControllerFrame::onClicked( wxCommandEvent& event )
 {
+  if( m_controller == nullptr )
+  {
+    return;
+  }
+
   const int id = event.GetId();
   if( id == m_pos1Button->GetId() )
   {
-    if( m_controller != nullptr )
-    {
-      disableButtons();
-      m_controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_1 );
-    }
+    disableButtons();
+    m_controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_1 );
   }
   else if( id == m_pos2Button->GetId() )
   {
-    if( m_controller != nullptr )
-    {
-      disableButtons();
-      m_controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_2 );
-    }
+    disableButtons();
+    m_controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_2 );
   }
   else if( id == m_referenceButton->GetId() )
   {
-    if( m_controller != nullptr )
-    {
-      disableButtons();
-      m_controller->referenceRun( AXIS::ONE );
-    }
+    disableButtons();
+    m_controller->referenceRun( AXIS::ONE );
   }
   else if( id == m_savePos1Button->GetId() )
   {
-    if( m_controller != nullptr )
-    {
-      m_controller->saveUserPosition( AXIS::ONE, USER_POSITION::POS_1 );
-    }
+    m_controller->saveUserPosition( AXIS::ONE, USER_POSITION::POS_1 );
   }
   else if( id == m_savePos2Button->GetId() )
   {
-    if( m_controller != nullptr )
-    {
-      m_controller->saveUserPosition( AXIS::ONE, USER_POSITION::POS_2 );
-    }
+    m_controller->saveUserPosition( AXIS::ONE, USER_POSITION::POS_2 );
   }
 }
 
@@ -254,8 +244,13 @@ void ControllerFrame::onButtonPress( wxMouseEvent& event )
 
 void ControllerFrame::onButtonRelease( wxMouseEvent& event )
 {
+  if( m_controller == nullptr )
+  {
+    return;
+  }
+
   const int id = event.GetId();
-  if( m_controller && ( id == m_moveUpButton->GetId() || id == m_moveDownButton->GetId() ) )
+  if( id == m_moveUpButton->GetId() || id == m_moveDownButton->GetId() )
   {
     m_controller->setUpDownDisabled( AXIS::ONE );
     enableButtons();
