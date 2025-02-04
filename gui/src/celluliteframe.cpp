@@ -1,5 +1,7 @@
 #include "celluliteframe.h"
+
 #include "cg_version.h"
+#include <wx/dcbuffer.h>
 
 namespace
 {
@@ -9,7 +11,9 @@ namespace
   constexpr auto kHEIGHT_ID_OFFSET = 0;
 }
 
-CelluliteFrame::CelluliteFrame( const ControllerMap& controllerMap )
+wxBEGIN_EVENT_TABLE( CelluliteFrame, wxFrame ) EVT_PAINT( CelluliteFrame::onPaint ) wxEND_EVENT_TABLE()
+
+  CelluliteFrame::CelluliteFrame( const ControllerMap& controllerMap )
   : wxFrame( nullptr, wxID_ANY, kAPP_NAME, wxDefaultPosition, wxSize( kWINDOW_WIDTH, kWINDOW_HEIGHT ),
       wxDEFAULT_FRAME_STYLE & ~( wxRESIZE_BORDER | wxMAXIMIZE_BOX ) )
 {
@@ -17,6 +21,8 @@ CelluliteFrame::CelluliteFrame( const ControllerMap& controllerMap )
   wxTopLevelWindowBase::SetMaxSize( wxSize( kWINDOW_WIDTH, kWINDOW_HEIGHT ) );
   createMenuBar();
   crateStatusBar();
+  SetBackgroundStyle( wxBG_STYLE_PAINT );
+  SetBackgroundColour( wxColour( 255, 255, 255 ) );
 
   const auto controllerHeight = controllerMap.find( ControllerAxis::HEIGHT );
 
@@ -87,4 +93,18 @@ void CelluliteFrame::onAbout( wxCommandEvent& event )
 void CelluliteFrame::onHello( wxCommandEvent& event )
 {
   wxLogMessage( ( "Hello from your " + kAPP_NAME + "!" ).c_str() );
+}
+
+void CelluliteFrame::onPaint( wxPaintEvent& event )
+{
+  wxAutoBufferedPaintDC dc( this );
+  dc.Clear();
+
+  wxRegion updateRegion = GetUpdateRegion();
+  wxRect updateRect = updateRegion.GetBox();
+
+  dc.SetBrush( *wxWHITE_BRUSH );
+  dc.SetPen( *wxTRANSPARENT_PEN );
+
+  dc.DrawRectangle( updateRect );
 }
