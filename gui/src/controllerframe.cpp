@@ -80,6 +80,7 @@ wxBEGIN_EVENT_TABLE( ControllerFrame, wxPanel ) EVT_PAINT( ControllerFrame::onPa
   wxImage::AddHandler( new wxPNGHandler );
   m_trainerBgImage = createImage( imagePanel, "Trainer.png", false );
   m_seatImage = createImage( imagePanel, "Seat.png" );
+  m_rotatedSeatImage = rotateImage( m_seatImage, 0 );
 
   auto* combinedImage = combineBitmaps( m_trainerBgImage, m_seatImage );
   m_combinedImageControl = new wxStaticBitmap( imagePanel, wxID_ANY, *combinedImage );
@@ -312,13 +313,13 @@ void ControllerFrame::rotateSeatImage( double angle )
 {
   if( angleChangedToForceRedraw( angle ) )
   {
-    wxImage rotatedSeatImage = rotateImage( m_seatImage, angle );
-    auto* combinedImage = combineBitmaps( m_trainerBgImage, &rotatedSeatImage );
-    m_combinedImageControl->SetBitmap( *combinedImage );
+    m_rotatedSeatImage = rotateImage( m_seatImage, angle );
 
-    wxRect invalidRect( centerSeat.x - m_seatImage->GetWidth() / 2, centerSeat.y - m_seatImage->GetHeight() / 2,
-      m_seatImage->GetWidth(), m_seatImage->GetHeight() );
-    m_combinedImageControl->RefreshRect( invalidRect );
+    wxRect invalidRect( centerSeat.x - m_rotatedSeatImage.GetWidth() / 2,
+      centerSeat.y - m_rotatedSeatImage.GetHeight() / 2, m_rotatedSeatImage.GetWidth(),
+      m_rotatedSeatImage.GetHeight() );
+    RefreshRect( invalidRect );
+    Update();
   }
 }
 
@@ -327,4 +328,6 @@ void ControllerFrame::onPaint( wxPaintEvent& /*event*/ )
   wxPaintDC dc( this );
   dc.SetBackground( *wxWHITE_BRUSH );
   dc.Clear();
+  auto* combinedImage = combineBitmaps( m_trainerBgImage, &m_rotatedSeatImage );
+  m_combinedImageControl->SetBitmap( *combinedImage );
 }

@@ -43,6 +43,7 @@ class ControllerFrame final : public wxPanel
 
     wxImage* m_trainerBgImage{ nullptr };
     wxImage* m_seatImage{ nullptr };
+    wxImage m_rotatedSeatImage{};
     wxStaticBitmap* m_combinedImageControl{ nullptr };
 
     wxDECLARE_EVENT_TABLE();
