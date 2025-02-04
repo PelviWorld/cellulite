@@ -1,10 +1,6 @@
 #include "celluliteapp.h"
 #include "configreader.h"
 
-#include <regex>
-
-const std::string tilt = "Seat tilt: ";
-
 bool CelluliteApp::OnInit()
 {
   ControllerMap controllerMap;

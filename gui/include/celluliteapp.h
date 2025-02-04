@@ -1,8 +1,5 @@
 #pragma once
 
-// laingvalue is needed
-#include "laingvalue.h"
-
 #include "celluliteframe.h"
 #include "gyrocom.h"
 
