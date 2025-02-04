@@ -21,10 +21,10 @@ namespace
     return image->Rotate( degreesToRadians( angle ), wxPoint( image->GetWidth() / 2, image->GetHeight() / 2 ) );
   }
 
-  wxImage* createImage( wxWindow* parent, std::string imageName )
+  wxImage* createImage( wxWindow* parent, std::string imageName, bool useAlpha = true )
   {
     auto* image = new wxImage( imageName, wxBITMAP_TYPE_PNG );
-    if( image->IsOk() )
+    if( image->IsOk() && useAlpha == true )
     {
       image->SetMaskColour( 255, 255, 255 );
       image->InitAlpha();
@@ -70,7 +70,7 @@ ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller
   imagePanel->SetSizer( imageSizer );
 
   wxImage::AddHandler( new wxPNGHandler );
-  m_trainerBgImage = createImage( imagePanel, "Trainer.png" );
+  m_trainerBgImage = createImage( imagePanel, "Trainer.png", false );
   m_seatImage = createImage( imagePanel, "Seat.png" );
 
   auto* combinedImage = combineBitmaps( m_trainerBgImage, m_seatImage );
