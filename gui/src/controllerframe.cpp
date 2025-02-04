@@ -302,11 +302,13 @@ void ControllerFrame::updateTableHeight()
 
 void ControllerFrame::rotateSeatImage( double angle )
 {
-  if( m_seatImage && m_trainerBgImage )
+  static int oldAngle = 0;
+  if( m_seatImage && m_trainerBgImage && std::abs( oldAngle - static_cast< int >( angle ) ) > 1 )
   {
     wxImage rotatedSeatImage = rotateImage( m_seatImage, angle );
     auto* combinedImage = combineBitmaps( m_trainerBgImage, &rotatedSeatImage );
     m_combinedImageControl->SetBitmap( *combinedImage );
     m_combinedImageControl->Refresh();
+    oldAngle = static_cast< int >( angle );
   }
 }
