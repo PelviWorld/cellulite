@@ -282,13 +282,19 @@ void ControllerFrame::onButtonRelease( wxMouseEvent& event )
 
 void ControllerFrame::enableButtons()
 {
-  m_pos1Button->Enable();
-  m_pos2Button->Enable();
   m_referenceButton->Enable();
+
   m_moveUpButton->Enable();
   m_moveDownButton->Enable();
+
+  m_pos1Button->Enable();
+  m_pos2Button->Enable();
+  m_pos3Button->Enable();
+
   m_savePos1Button->Enable();
   m_savePos2Button->Enable();
+  m_savePos3Button->Enable();
+
   m_timer.Stop();
   updateTableHeight();
 }
