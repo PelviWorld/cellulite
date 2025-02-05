@@ -93,14 +93,14 @@ wxBEGIN_EVENT_TABLE( ControllerFrame, wxPanel ) EVT_PAINT( ControllerFrame::onPa
   buttonSizer->Add( m_pos1Button, 0, wxALL, kBORDER );
   buttonSizer->Add( m_pos2Button, 0, wxALL, kBORDER );
   buttonSizer->Add( m_pos3Button, 0, wxALL, kBORDER );
-  buttonSizer->AddSpacer( kBIG_SPACER );
+  buttonSizer->AddStretchSpacer( 1 );
   buttonSizer->Add( m_moveUpButton, 0, wxALL, kBORDER );
   buttonSizer->Add( m_moveDownButton, 0, wxALL, kBORDER );
   buttonSizer->AddSpacer( kBUTTON_SPACER );
   buttonSizer->Add( m_savePos1Button, 0, wxALL, kBORDER );
   buttonSizer->Add( m_savePos2Button, 0, wxALL, kBORDER );
   buttonSizer->Add( m_savePos3Button, 0, wxALL, kBORDER );
-  buttonSizer->AddStretchSpacer( 1 );
+  buttonSizer->AddSpacer( kBIG_SPACER );
   buttonSizer->Add( m_referenceButton, 0, wxALL, kBORDER );
 
   mainSizer->Add( buttonSizer, 0, wxEXPAND | wxALL, kBORDER );
