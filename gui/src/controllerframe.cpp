@@ -92,12 +92,14 @@ wxBEGIN_EVENT_TABLE( ControllerFrame, wxPanel ) EVT_PAINT( ControllerFrame::onPa
   buttonSizer->AddSpacer( kSMALL_SPACER );
   buttonSizer->Add( m_pos1Button, 0, wxALL, kBORDER );
   buttonSizer->Add( m_pos2Button, 0, wxALL, kBORDER );
+  buttonSizer->Add( m_pos3Button, 0, wxALL, kBORDER );
   buttonSizer->AddSpacer( kBIG_SPACER );
   buttonSizer->Add( m_moveUpButton, 0, wxALL, kBORDER );
   buttonSizer->Add( m_moveDownButton, 0, wxALL, kBORDER );
   buttonSizer->AddSpacer( kBUTTON_SPACER );
   buttonSizer->Add( m_savePos1Button, 0, wxALL, kBORDER );
   buttonSizer->Add( m_savePos2Button, 0, wxALL, kBORDER );
+  buttonSizer->Add( m_savePos3Button, 0, wxALL, kBORDER );
   buttonSizer->AddStretchSpacer( 1 );
   buttonSizer->Add( m_referenceButton, 0, wxALL, kBORDER );
 
@@ -107,32 +109,43 @@ wxBEGIN_EVENT_TABLE( ControllerFrame, wxPanel ) EVT_PAINT( ControllerFrame::onPa
   Bind( wxEVT_TIMER, &ControllerFrame::onTimer, this, m_timer.GetId() );
 }
 
+wxButton* createButton( wxWindow* parent, const std::string& label, const std::string& tooltip, const int id,
+  bool bindPressAndRelease = false )
+{
+  auto* button = new wxButton( parent, id, label );
+  button->SetToolTip( tooltip );
+  return button;
+}
+
 void ControllerFrame::createButtons( const int idOffset )
 {
   // NOLINTBEGIN(*-magic-numbers)
-  m_pos1Button = new wxButton( this, wxID_ANY + idOffset, "Pos 1" );
-  m_pos1Button->SetToolTip( "Move to position 1" );
-  m_pos2Button = new wxButton( this, wxID_ANY + idOffset + 1, "Pos 2" );
-  m_pos2Button->SetToolTip( "Move to position 2" );
-  m_referenceButton = new wxButton( this, wxID_ANY + idOffset + 2, "Reference" );
-  m_referenceButton->SetToolTip( "Reference run" );
-  m_moveUpButton = new wxButton( this, wxID_ANY + idOffset + 3, "Move Up" );
-  m_moveUpButton->SetToolTip( "Move up" );
-  m_moveDownButton = new wxButton( this, wxID_ANY + idOffset + 4, "Move Down" );
-  m_moveDownButton->SetToolTip( "Move down" );
-  m_savePos1Button = new wxButton( this, wxID_ANY + idOffset + 5, "Save Pos 1" );
-  m_savePos1Button->SetToolTip( "Save position 1" );
-  m_savePos2Button = new wxButton( this, wxID_ANY + idOffset + 6, "Save Pos 2" );
-  m_savePos2Button->SetToolTip( "Save position 2" );
+  m_moveUpButton = createButton( this, "Move Up", "Move up", wxID_ANY + idOffset + 3 );
+  m_moveDownButton = createButton( this, "Move Down", "Move down", wxID_ANY + idOffset + 4 );
+
+  m_referenceButton = createButton( this, "Reference", "Reference run", wxID_ANY + idOffset + 2 );
+
+  m_pos1Button = createButton( this, "Pos 1", "Move to position 1", wxID_ANY + idOffset );
+  m_pos2Button = createButton( this, "Pos 2", "Move to position 2", wxID_ANY + idOffset + 1 );
+  m_pos3Button = createButton( this, "Pos 3", "Move to position 3", wxID_ANY + idOffset + 2 );
+
+  m_savePos1Button = createButton( this, "Save Pos 1", "Save position 1", wxID_ANY + idOffset + 5 );
+  m_savePos2Button = createButton( this, "Save Pos 2", "Save position 2", wxID_ANY + idOffset + 6 );
+  m_savePos3Button = createButton( this, "Save Pos 3", "Save position 3", wxID_ANY + idOffset + 7 );
   // NOLINTEND(*-magic-numbers)
+
+  bindButtonsPressAndRelease( m_moveUpButton );
+  bindButtonsPressAndRelease( m_moveDownButton );
+
+  bindButtons( m_referenceButton );
 
   bindButtons( m_pos1Button );
   bindButtons( m_pos2Button );
-  bindButtons( m_referenceButton );
-  bindButtonsPressAndRelease( m_moveUpButton );
-  bindButtonsPressAndRelease( m_moveDownButton );
+  bindButtons( m_pos3Button );
+
   bindButtons( m_savePos1Button );
   bindButtons( m_savePos2Button );
+  bindButtons( m_savePos3Button );
 
   setBindingForReenablingButtons();
 }
@@ -204,6 +217,11 @@ void ControllerFrame::onClicked( wxCommandEvent& event )
     disableButtons();
     m_controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_2 );
   }
+  else if( id == m_pos3Button->GetId() )
+  {
+    disableButtons();
+    m_controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_3 );
+  }
   else if( id == m_referenceButton->GetId() )
   {
     disableButtons();
@@ -216,6 +234,10 @@ void ControllerFrame::onClicked( wxCommandEvent& event )
   else if( id == m_savePos2Button->GetId() )
   {
     m_controller->saveUserPosition( AXIS::ONE, USER_POSITION::POS_2 );
+  }
+  else if( id == m_savePos3Button->GetId() )
+  {
+    m_controller->saveUserPosition( AXIS::ONE, USER_POSITION::POS_3 );
   }
 }
 
@@ -278,13 +300,18 @@ void ControllerFrame::enableButtons( wxCommandEvent& /*event*/ )
 
 void ControllerFrame::disableButtons()
 {
-  m_pos1Button->Disable();
-  m_pos2Button->Disable();
-  m_referenceButton->Disable();
   m_moveUpButton->Disable();
   m_moveDownButton->Disable();
+
+  m_referenceButton->Disable();
+
+  m_pos1Button->Disable();
+  m_pos2Button->Disable();
+  m_pos3Button->Disable();
+
   m_savePos1Button->Disable();
   m_savePos2Button->Disable();
+  m_savePos3Button->Disable();
 }
 
 void ControllerFrame::onTimer( wxTimerEvent& /*event*/ )
