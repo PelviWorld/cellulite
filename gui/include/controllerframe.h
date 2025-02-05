@@ -21,6 +21,7 @@ class ControllerFrame final : public wxPanel
     void rotateSeatImage( double angle );
 
   private:
+    void createLayout();
     void createButtons( int idOffset );
     void setBindingForReenablingButtons();
     void bindButtons( wxButton* button );
