@@ -17,7 +17,7 @@ CheckOptions:
   - { key: cppcoreguidelines-explicit-virtual-functions.IgnoreDestructors, value: true }
 
   - { key: readability-identifier-length.IgnoredParameterNames,         value: '^([arcns]|id|ok)$' }
-  - { key: readability-identifier-length.IgnoredVariableNames,          value: '^(id|ok)$' }
+  - { key: readability-identifier-length.IgnoredVariableNames,          value: '^(id|ok|dc)$' }
   - { key: readability-identifier-length.IgnoredLoopCounterNames,       value: '^[ijkn]$' }
   - { key: readability-identifier-length.IgnoredExceptionVariblesNames, value: '^[e]$' }
 
