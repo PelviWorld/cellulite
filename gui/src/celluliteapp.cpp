@@ -38,9 +38,10 @@ void CelluliteApp::readDataFromPico()
 
 void CelluliteApp::readLoop()
 {
+  constexpr auto kREAD_INTERVAL = 150;
   while( running )
   {
     readDataFromPico();
-    std::this_thread::sleep_for( std::chrono::milliseconds( 150 ) );
+    std::this_thread::sleep_for( std::chrono::milliseconds( kREAD_INTERVAL ) );
   }
 }

@@ -1,64 +1,56 @@
 #include "gyrocom.h"
+
+#include <array>
 #include <chrono>
 #include <iostream>
 #include <regex>
 
 namespace
 {
+  constexpr auto kBUFFER_SIZE = 256;
+
   void writeData( HANDLE hSerial, const std::string& data )
   {
-    DWORD bytesWritten;
-    if( !WriteFile( hSerial, data.c_str(), data.size(), &bytesWritten, nullptr ) )
+    DWORD bytesWritten{};
+    if( WriteFile( hSerial, data.c_str(), data.size(), &bytesWritten, nullptr ) == 0 )
     {
       std::cerr << "Error writing to serial port" << std::endl;
     }
   }
 
-  std::string readBuffer( DWORD bytesRead, char* buffer )
-  {
-    buffer[ bytesRead ] = '\0';
-    std::string data( buffer );
-    return data;
-  }
-
-  std::string readFailed()
-  {
-    std::cerr << "Error reading from serial port" << std::endl;
-    return "-";
-  }
-
   std::string readData( HANDLE hSerial )
   {
-    char buffer[ 256 ];
-    DWORD bytesRead;
+    std::array< char, kBUFFER_SIZE > buffer{};
+    buffer.fill( '\0' );
+    DWORD bytesRead{};
 
     writeData( hSerial, "P" );
 
-    if( ReadFile( hSerial, buffer, sizeof( buffer ) - 1, &bytesRead, nullptr ) )
+    if( ReadFile( hSerial, buffer.data(), sizeof( buffer ) - 1, &bytesRead, nullptr ) == 0 )
     {
-      return readBuffer( bytesRead, buffer );
+      std::cerr << "Error reading from serial port" << std::endl;
     }
-    else
-    {
-      return readFailed();
-    }
-  }
+
+    return std::string( buffer.data() );
+  };
 
   DCB getSerialParams( HANDLE hSerial )
   {
     DCB dcbSerialParams = { 0 };
-    if( !GetCommState( hSerial, &dcbSerialParams ) )
+    if( GetCommState( hSerial, &dcbSerialParams ) == 0 )
     {
       throw std::runtime_error( "Error getting serial port state" );
     }
+
     return dcbSerialParams;
   }
 
   void dcbSetGyroParameters( DCB& dcbSerialParams )
   {
+    constexpr auto kBYTE_SIZE = 8;
     dcbSerialParams.DCBlength = sizeof( dcbSerialParams );
     dcbSerialParams.BaudRate = CBR_9600;
-    dcbSerialParams.ByteSize = 8;
+    dcbSerialParams.ByteSize = kBYTE_SIZE;
     dcbSerialParams.StopBits = ONESTOPBIT;
     dcbSerialParams.Parity = NOPARITY;
     dcbSerialParams.fBinary = TRUE;
@@ -77,7 +69,7 @@ namespace
 
   void setCommState( HANDLE hSerial, DCB& dcbSerialParams )
   {
-    if( !SetCommState( hSerial, &dcbSerialParams ) )
+    if( SetCommState( hSerial, &dcbSerialParams ) == 0 )
     {
       throw std::runtime_error( "Error setting serial port state" );
     }
@@ -85,16 +77,18 @@ namespace
 
   COMMTIMEOUTS gyroTimeouts()
   {
+    constexpr auto kTIMEOUT = 50;
+    constexpr auto kMULTIPLIER = 10;
     COMMTIMEOUTS timeouts = { 0 };
-    timeouts.ReadIntervalTimeout = 50;
-    timeouts.ReadTotalTimeoutConstant = 50;
-    timeouts.ReadTotalTimeoutMultiplier = 10;
+    timeouts.ReadIntervalTimeout = kTIMEOUT;
+    timeouts.ReadTotalTimeoutConstant = kTIMEOUT;
+    timeouts.ReadTotalTimeoutMultiplier = kMULTIPLIER;
     return timeouts;
   }
 
   void setCommTimeouts( HANDLE hSerial, COMMTIMEOUTS& timeouts )
   {
-    if( !SetCommTimeouts( hSerial, &timeouts ) )
+    if( SetCommTimeouts( hSerial, &timeouts ) == 0 )
     {
       throw std::runtime_error( "Error setting serial port timeouts" );
     }
@@ -112,9 +106,9 @@ namespace
 } // namespace
 
 GyroCom::GyroCom( const std::string& portName )
+  : m_hSerial{ CreateFile(
+      portName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr ) }
 {
-  m_hSerial = CreateFile(
-    portName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr );
   if( m_hSerial == INVALID_HANDLE_VALUE )
   {
     throw std::runtime_error( "Error opening serial port" );

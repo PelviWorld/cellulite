@@ -1,4 +1,4 @@
-#include "ConfigReader.h"
+#include "configreader.h"
 #include "utility.h"
 
 #include <iostream>
@@ -60,7 +60,7 @@ std::vector< std::string > createControllerMap(
   std::vector< std::string > remainingPorts;
   for( const auto& port : comPorts )
   {
-    if( moveControllerToMap( std::make_shared< LaingController >( port ), serialConfig, controllerMap ) == false )
+    if( !moveControllerToMap( std::make_shared< LaingController >( port ), serialConfig, controllerMap ) )
     {
       remainingPorts.push_back( port );
     }

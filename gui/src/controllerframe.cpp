@@ -11,11 +11,14 @@ namespace
   constexpr auto kSMALL_SPACER = 10;
   constexpr auto kBIG_SPACER = 50;
   constexpr auto kBUTTON_SPACER = 30;
-  const wxPoint centerSeat( 243, 235 );
+  const wxPoint kCENTER_SEAT( 243, 235 );
+  constexpr auto kHALF_CIRCLE = 180;
+  const auto kWHITE_BG = wxColour( 255, 255, 255 );
+  constexpr auto kPICTURE_ANGLE_OFFSET = -10;
 
   double degreesToRadians( double degrees )
   {
-    return degrees * M_PI / 180.0;
+    return degrees * M_PI / kHALF_CIRCLE;
   }
 
   wxImage rotateImage( wxImage* image, double angle )
@@ -26,30 +29,31 @@ namespace
   wxImage* createImage( wxWindow* parent, std::string imageName, bool useAlpha = true )
   {
     auto* image = new wxImage( imageName, wxBITMAP_TYPE_PNG );
-    if( image->IsOk() && useAlpha == true )
+    if( image->IsOk() && useAlpha )
     {
-      image->SetMaskColour( 255, 255, 255 );
+      image->SetMaskColour( kWHITE_BG.Red(), kWHITE_BG.Green(), kWHITE_BG.Blue() );
       image->InitAlpha();
     }
     return image;
   }
 
-  wxBitmap* combineBitmaps( wxImage* bgImage, wxImage* seatImage, const wxPoint& centerOfSeatImage = centerSeat )
+  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+  wxBitmap* combineBitmaps( wxImage* bgImage, wxImage* seatImage, const wxPoint& centerOfSeatImage = kCENTER_SEAT )
   {
     wxBitmap combinedBitmap( bgImage->GetWidth(), bgImage->GetHeight() );
     wxMemoryDC memDC( combinedBitmap );
 
-    auto rotatedSeatImage = rotateImage( seatImage, -10 );
+    auto rotatedSeatImage = rotateImage( seatImage, kPICTURE_ANGLE_OFFSET );
     memDC.SetBrush( *wxWHITE_BRUSH );
     memDC.SetPen( *wxWHITE_PEN );
     memDC.DrawRectangle( 0, 0, bgImage->GetWidth(), bgImage->GetHeight() );
     memDC.DrawBitmap( wxBitmap( *bgImage ), 0, 0, true );
-    memDC.DrawBitmap( wxBitmap( rotatedSeatImage ), centerOfSeatImage.x - rotatedSeatImage.GetWidth() / 2,
-      centerOfSeatImage.y - rotatedSeatImage.GetHeight() / 2, true );
+    memDC.DrawBitmap( wxBitmap( rotatedSeatImage ), centerOfSeatImage.x - ( rotatedSeatImage.GetWidth() / 2 ),
+      centerOfSeatImage.y - ( rotatedSeatImage.GetHeight() / 2 ), true );
     memDC.SelectObject( wxNullBitmap );
 
     wxImage combinedImage = combinedBitmap.ConvertToImage();
-    combinedImage.SetMaskColour( 255, 255, 255 );
+    combinedImage.SetMaskColour( kWHITE_BG.Red(), kWHITE_BG.Green(), kWHITE_BG.Blue() );
     combinedImage.InitAlpha();
 
     return new wxBitmap( combinedImage );
@@ -61,6 +65,7 @@ namespace
     return std::abs( oldAngle - static_cast< int >( angle ) ) > 0;
   }
 
+  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
   wxButton* createButton( wxWindow* parent, const std::string& label, const std::string& tooltip, const int id,
     bool bindPressAndRelease = false )
   {
@@ -246,8 +251,8 @@ void ControllerFrame::rotateSeatImage( double angle )
   {
     m_rotatedSeatImage = rotateImage( m_seatImage, angle );
 
-    wxRect invalidRect( centerSeat.x - m_rotatedSeatImage.GetWidth() / 2,
-      centerSeat.y - m_rotatedSeatImage.GetHeight() / 2, m_rotatedSeatImage.GetWidth(),
+    wxRect invalidRect( kCENTER_SEAT.x - ( m_rotatedSeatImage.GetWidth() / 2 ),
+      kCENTER_SEAT.y - ( m_rotatedSeatImage.GetHeight() / 2 ), m_rotatedSeatImage.GetWidth(),
       m_rotatedSeatImage.GetHeight() );
     RefreshRect( invalidRect );
     Update();
@@ -286,7 +291,8 @@ void ControllerFrame::setBindingForReenablingButtons()
 {
   if( m_controller != nullptr )
   {
-    m_controller->setCallback( [ this ] { wxQueueEvent( this, new wxCommandEvent( EVT_ENABLE_BUTTONS ) ); } );
+    // the wxQueueEvent takes care of deleting the event created with new, so no memory leak here
+    m_controller->setCallback( [ this ] { wxQueueEvent( this, new wxCommandEvent( EVT_ENABLE_BUTTONS ) ); } ); // NOLINT
   }
   Bind( EVT_ENABLE_BUTTONS, &ControllerFrame::enableButtons, this );
 }

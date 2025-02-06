@@ -9,6 +9,8 @@ namespace
   constexpr auto kWINDOW_HEIGHT = 800;
   const std::string kAPP_NAME = "Cellulite APP";
   constexpr auto kHEIGHT_ID_OFFSET = 0;
+  constexpr auto kFRAME_BORDER = 5;
+  const auto kWHITE_BG = wxColour( 255, 255, 255 );
 }
 
 wxBEGIN_EVENT_TABLE( CelluliteFrame, wxFrame ) EVT_PAINT( CelluliteFrame::onPaint ) wxEND_EVENT_TABLE()
@@ -22,7 +24,7 @@ wxBEGIN_EVENT_TABLE( CelluliteFrame, wxFrame ) EVT_PAINT( CelluliteFrame::onPain
   createMenuBar();
   crateStatusBar();
   SetBackgroundStyle( wxBG_STYLE_PAINT );
-  SetBackgroundColour( wxColour( 255, 255, 255 ) );
+  SetBackgroundColour( kWHITE_BG );
 
   const auto controllerHeight = controllerMap.find( ControllerAxis::HEIGHT );
 
@@ -39,7 +41,7 @@ wxBEGIN_EVENT_TABLE( CelluliteFrame, wxFrame ) EVT_PAINT( CelluliteFrame::onPain
   auto* headerSizer = new wxBoxSizer( wxHORIZONTAL );
   auto* frameSizer = new wxBoxSizer( wxHORIZONTAL );
 
-  frameSizer->Add( m_heightFrame, 1, wxEXPAND | wxALL, 5 );
+  frameSizer->Add( m_heightFrame, 1, wxEXPAND | wxALL, kFRAME_BORDER );
 
   sizer->Add( headerSizer, 0, wxEXPAND );
   sizer->Add( frameSizer, 1, wxEXPAND );

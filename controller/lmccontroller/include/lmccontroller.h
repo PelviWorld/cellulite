@@ -25,7 +25,7 @@ class LmcController final : public ILxcController
     void referenceRun( AXIS axis ) const override;
 
     uint16_t getTableHeight( AXIS axis ) const override;
-    void setMoveUpDown( AXIS axis, USER_POSITION user_position ) override;
+    void setMoveUpDown( AXIS axis, USER_POSITION moveDirection ) override;
     void setUpDownDisabled( AXIS axis ) const override;
     void saveUserPosition( AXIS axis, USER_POSITION pos ) const override;
 
