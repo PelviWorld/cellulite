@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
-        src/gyrocom.cpp
         src/celluliteapp.cpp
         src/celluliteframe.cpp
         src/controllerframe.cpp
@@ -13,9 +12,13 @@ set(SOURCES
 )
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    list(APPEND SOURCES src/windowsutility.cpp)
+    list(APPEND SOURCES 
+    src/windowsutility.cpp
+    src/windowsgyrocom.cpp)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    list(APPEND SOURCES src/linuxutility.cpp)
+    list(APPEND SOURCES 
+    src/linuxutility.cpp
+    src/windowsgyrocom.cpp) # TODO: Change to linuxgyrocom.cpp when implemented
 endif ()
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})

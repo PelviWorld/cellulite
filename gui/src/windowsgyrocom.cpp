@@ -4,6 +4,7 @@
 #include <chrono>
 #include <iostream>
 #include <regex>
+#include <windows.h>
 
 namespace
 {
@@ -105,24 +106,42 @@ namespace
   }
 } // namespace
 
-GyroCom::GyroCom( const std::string& portName )
-  : m_hSerial{ CreateFile(
-      portName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr ) }
+class GyroCom::Impl
 {
-  if( m_hSerial == INVALID_HANDLE_VALUE )
-  {
-    throw std::runtime_error( "Error opening serial port" );
-  }
-  configurePort( m_hSerial );
+  public:
+    explicit Impl( const std::string& portName )
+      : hSerial{ CreateFile(
+          portName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr ) }
+    {
+      if( hSerial == INVALID_HANDLE_VALUE )
+      {
+        throw std::runtime_error( "Error opening serial port" );
+      }
+      configurePort( hSerial );
+    }
+    Impl( const Impl& ) = delete;
+    Impl& operator=( const Impl& ) = delete;
+    Impl( Impl&& ) = delete;
+    Impl& operator=( Impl&& ) = delete;
+
+    ~Impl()
+    {
+      CloseHandle( hSerial );
+    }
+
+    HANDLE hSerial;
+};
+
+GyroCom::GyroCom( const std::string& portName )
+  : m_pImpl{ std::make_unique< Impl >( portName ) }
+{
 }
 
-GyroCom::~GyroCom()
-{
-  CloseHandle( m_hSerial );
-}
+GyroCom::~GyroCom() = default;
+
 bool GyroCom::verifyConnection()
 {
-  std::string data = readData( m_hSerial );
+  std::string data = readData( m_pImpl->hSerial );
   if( data[ 0 ] != 'P' )
   {
     return false;
@@ -133,7 +152,7 @@ bool GyroCom::verifyConnection()
 
 double GyroCom::readDouble()
 {
-  const std::string data = readData( m_hSerial );
+  const std::string data = readData( m_pImpl->hSerial );
   if( data.empty() || data[ 0 ] != 'P' )
   {
     return 0.0;
