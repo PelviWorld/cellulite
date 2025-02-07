@@ -11,16 +11,6 @@ set(SOURCES
         src/configreader.cpp
 )
 
-if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    list(APPEND SOURCES 
-    src/windowsutility.cpp
-    src/windowsgyrocom.cpp)
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    list(APPEND SOURCES 
-    src/linuxutility.cpp
-    src/windowsgyrocom.cpp) # TODO: Change to linuxgyrocom.cpp when implemented
-endif ()
-
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
@@ -30,9 +20,11 @@ find_package(inih REQUIRED)
 target_link_libraries(${PROJECT_NAME}
         PUBLIC
         ${wxWidgets_LIBRARIES}
+        gyrosensor::gyrosensor
         PRIVATE
         inih::inih
         laingcontroller::laingcontroller
+        utility::utility
 )
 
 target_include_directories(${PROJECT_NAME}

@@ -32,6 +32,8 @@ add_executable(${PROJECT_NAME} WIN32
 
 add_subdirectory(controller)
 add_subdirectory(gui)
+add_subdirectory(utility)
+add_subdirectory(sensors)
 
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
