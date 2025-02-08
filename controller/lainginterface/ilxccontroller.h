@@ -1,6 +1,8 @@
 #pragma once
 
+#include <condition_variable>
 #include <laingvalue.h>
+#include <memory>
 #include <mutex>
 
 class MoveTecModBus;
