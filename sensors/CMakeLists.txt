@@ -12,7 +12,7 @@ list(APPEND SOURCES
         src/windowsgyrocom.cpp)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 list(APPEND SOURCES 
-        src/windowsgyrocom.cpp) # TODO: Change to linuxgyrocom.cpp when implemented
+        src/linuxgyrocom.cpp)
 endif ()
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
