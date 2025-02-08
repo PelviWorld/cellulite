@@ -1,12 +1,23 @@
 #include "utility.h"
 
+#include <filesystem>
 #include <iostream>
 
-std::vector< std::string > getAvailableComPorts( const INIReader& reader )
+std::vector< std::string > getAvailableComPorts( const INIReader& /*reader*/ )
 {
   std::vector< std::string > comPorts;
-  comPorts.emplace_back( getString( reader, "DEVICES", "one" ) );
-  comPorts.emplace_back( getString( reader, "DEVICES", "two" ) );
+
+  for( const auto& entry : std::filesystem::directory_iterator( "/dev" ) )
+  {
+    if( entry.path().string().find( "ttyUSB" ) != std::string::npos )
+    {
+      comPorts.push_back( entry.path().string() );
+    }
+    if( entry.path().string().find( "ttyACM" ) != std::string::npos )
+    {
+      comPorts.push_back( entry.path().string() );
+    }
+  }
   return comPorts;
 }
 
