@@ -16,7 +16,7 @@ class ControllerFrame final : public wxPanel
     void onButtonRelease( wxMouseEvent& event );
     void enableButtons( wxCommandEvent& event );
     void enableButtons();
-    void disableButtons();
+    void disableButtons( bool onPress = false );
     void updateTableHeight();
     void rotateSeatImage( double angle );
 

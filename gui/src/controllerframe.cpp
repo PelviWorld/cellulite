@@ -163,13 +163,13 @@ void ControllerFrame::onButtonPress( wxMouseEvent& event )
   if( id == m_moveUpButton->GetId() )
   {
     m_controller->setMoveUpDown( AXIS::ONE, USER_POSITION::MOVE_UP );
-    disableButtons();
+    disableButtons( true );
     m_timer.Start( kPOLLING_INTERVAL );
   }
   else if( id == m_moveDownButton->GetId() )
   {
     m_controller->setMoveUpDown( AXIS::ONE, USER_POSITION::MOVE_DOWN );
-    disableButtons();
+    disableButtons( true );
     m_timer.Start( kPOLLING_INTERVAL );
   }
   event.Skip();
@@ -215,10 +215,17 @@ void ControllerFrame::enableButtons( wxCommandEvent& /*event*/ )
   enableButtons();
 }
 
-void ControllerFrame::disableButtons()
+void ControllerFrame::disableButtons( bool onPress )
 {
+#ifndef WIN32
+  if( !onPress )
+  {
+#endif
   m_moveUpButton->Disable();
   m_moveDownButton->Disable();
+#ifndef WIN32
+  }
+#endif
 
   m_referenceButton->Disable();
 
