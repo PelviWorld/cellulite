@@ -22,7 +22,7 @@ wxBEGIN_EVENT_TABLE( CelluliteFrame, wxFrame ) EVT_PAINT( CelluliteFrame::onPain
   wxTopLevelWindowBase::SetMinSize( wxSize( kWINDOW_WIDTH, kWINDOW_HEIGHT ) );
   wxTopLevelWindowBase::SetMaxSize( wxSize( kWINDOW_WIDTH, kWINDOW_HEIGHT ) );
   createMenuBar();
-  crateStatusBar();
+  createStatusBar();
   SetBackgroundStyle( wxBG_STYLE_PAINT );
   SetBackgroundColour( kWHITE_BG );
 
@@ -70,7 +70,7 @@ void CelluliteFrame::createMenuBar()
   Bind( wxEVT_MENU, &CelluliteFrame::onExit, this, wxID_EXIT );
 }
 
-void CelluliteFrame::crateStatusBar()
+void CelluliteFrame::createStatusBar()
 {
   wxFrameBase::CreateStatusBar();
   wxFrameBase::SetStatusText( kAPP_NAME );

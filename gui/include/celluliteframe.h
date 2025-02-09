@@ -15,7 +15,7 @@ class CelluliteFrame final : public wxFrame
     explicit CelluliteFrame( const ControllerMap& controllerMap );
 
     void createMenuBar();
-    void crateStatusBar();
+    void createStatusBar();
     void setPitch( double pitch );
 
   private:
