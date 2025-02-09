@@ -89,6 +89,24 @@ wxBEGIN_EVENT_TABLE( ControllerFrame, wxPanel ) EVT_PAINT( ControllerFrame::onPa
   Bind( wxEVT_TIMER, &ControllerFrame::onTimer, this, m_timer.GetId() );
 }
 
+ControllerFrame::~ControllerFrame()
+{
+  delete m_pos1Button;
+  delete m_pos2Button;
+  delete m_pos3Button;
+  delete m_referenceButton;
+  delete m_moveUpButton;
+  delete m_moveDownButton;
+  delete m_savePos1Button;
+  delete m_savePos2Button;
+  delete m_savePos3Button;
+  delete m_tableHeightLabel;
+  delete m_trainerBgImage;
+  delete m_seatImage;
+  delete m_imagePanel;
+  m_timer.Stop();
+}
+
 void ControllerFrame::onHoverEnter( wxMouseEvent& event )
 {
   if( const auto* button = dynamic_cast< wxButton* >( event.GetEventObject() ) )
@@ -221,8 +239,8 @@ void ControllerFrame::disableButtons( bool onPress )
   if( !onPress )
   {
 #endif
-  m_moveUpButton->Disable();
-  m_moveDownButton->Disable();
+    m_moveUpButton->Disable();
+    m_moveDownButton->Disable();
 #ifndef WIN32
   }
 #endif
@@ -273,6 +291,7 @@ void ControllerFrame::onPaint( wxPaintEvent& /*event*/ )
   dc.Clear();
   auto* combinedImage = combineBitmaps( m_trainerBgImage, &m_rotatedSeatImage );
   dc.DrawBitmap( *combinedImage, 0, 0, true );
+  delete combinedImage;
 }
 
 void ControllerFrame::bindButtons( wxButton* button )

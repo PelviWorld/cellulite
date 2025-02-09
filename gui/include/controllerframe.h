@@ -8,6 +8,7 @@ class ControllerFrame final : public wxPanel
 {
   public:
     ControllerFrame( wxWindow* parent, const Controller& controller, int idOffset );
+    ~ControllerFrame();
 
     void onHoverEnter( wxMouseEvent& event );
     void onHoverLeave( wxMouseEvent& event );
