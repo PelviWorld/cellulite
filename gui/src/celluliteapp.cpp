@@ -31,7 +31,12 @@ void CelluliteApp::readDataFromPico()
   if( m_gyroCom != nullptr )
   {
     m_pitch = m_gyroCom->readDouble();
-    m_frame->setPitch( m_pitch );
+    CallAfter( [ this ]() {
+      if( m_frame )
+      {
+        m_frame->setPitch( m_pitch );
+      }
+    } );
   }
 }
 
