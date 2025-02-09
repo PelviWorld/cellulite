@@ -30,6 +30,12 @@ add_executable(${PROJECT_NAME} WIN32
         src/main.cpp
 )
 
+if(CMAKE_BUILD_TYPE MATCHES "Debug" AND UNIX)
+  target_link_options(${PROJECT_NAME}
+    BEFORE PUBLIC -fsanitize=undefined PUBLIC -fsanitize=address
+  )
+endif()
+
 add_subdirectory(controller)
 add_subdirectory(gui)
 add_subdirectory(utility)
@@ -50,6 +56,8 @@ set(CPACK_PACKAGE_NAME "cellulitegui")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cellulite GUI to set up the axis of the cellulite seat")
 set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/packages")
 
+set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/${PROJECT_NAME}")
+
 set(CPACK_PACKAGE_VENDOR "PelviWorld")
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
@@ -57,12 +65,12 @@ set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "CelluliteGUI")
 
-set(CPACK_GENERATOR NSIS)
-set(CPACK_NSIS_MODIFY_PATH ON)
-set(CPACK_NSIS_PACKAGE_NAME "CelluliteGUI")
+# set(CPACK_GENERATOR NSIS)
+# set(CPACK_NSIS_MODIFY_PATH ON)
+# set(CPACK_NSIS_PACKAGE_NAME "CelluliteGUI")
 set(CPACK_PACKAGE_EXECUTABLES "CelluliteGUI" "CelluliteGUI")
 
-#set(CPACK_GENERATOR "DEB")
+set(CPACK_GENERATOR "DEB")
 set(CPACK_DEBIAN_PACKAGE_NAME "cellulitegui")
 set(CPACK_DEBIAN_FILE_NAME "cellutitegui-${PROJECT_VERSION}.deb")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "PelviWorld")
