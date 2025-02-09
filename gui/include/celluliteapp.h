@@ -19,7 +19,7 @@ class CelluliteApp final : public wxApp
     void readDataFromPico();
     void readLoop();
 
-    std::unique_ptr< CelluliteFrame > m_frame{ nullptr };
+    CelluliteFrame* m_frame{ nullptr };
     std::unique_ptr< GyroCom > m_gyroCom;
     std::thread readThread;
     std::atomic< bool > running{ true };

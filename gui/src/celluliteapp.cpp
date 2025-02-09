@@ -6,10 +6,10 @@ bool CelluliteApp::OnInit()
   ControllerMap controllerMap;
   auto remainingPorts = createControllerMapAndReturnRemainingPorts( controllerMap );
   m_gyroCom = createGyro( remainingPorts );
-  m_frame = std::make_unique< CelluliteFrame >( controllerMap );
+  m_frame = new CelluliteFrame( controllerMap );
 
   m_frame->Show( true );
-  SetTopWindow( m_frame.get() );
+  SetTopWindow( m_frame );
 
   readThread = std::thread( &CelluliteApp::readLoop, this );
 
@@ -23,7 +23,6 @@ int CelluliteApp::OnExit()
   {
     readThread.join();
   }
-  wxSleep( 1 );
   return wxApp::OnExit();
 }
 
