@@ -2,6 +2,8 @@
 #include "utility.h"
 
 #include <iostream>
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
 
 int getValue( const INIReader& reader, const std::string& section, const std::string& key )
 {
@@ -70,7 +72,9 @@ std::vector< std::string > createControllerMap(
 
 std::vector< std::string > createController( ControllerMap& controllerMap )
 {
-  const auto reader = getReader( "cellulite.ini" );
+  const wxFileName executablePath( wxStandardPaths::Get().GetExecutablePath() );
+  const auto iniPath = executablePath.GetPath() + "/cellulite.ini";
+  const auto reader = getReader( iniPath.ToStdString() );
   const auto serialConfig = readSerialConfig( reader );
   return createControllerMap( reader, serialConfig, controllerMap );
 }

@@ -2,6 +2,7 @@
 
 #include "controller.h"
 
+#include <filesystem>
 #include <wx/wx.h>
 
 class ControllerFrame final : public wxPanel
@@ -9,6 +10,11 @@ class ControllerFrame final : public wxPanel
   public:
     ControllerFrame( wxWindow* parent, const Controller& controller, int idOffset );
     ~ControllerFrame();
+
+    ControllerFrame( const ControllerFrame& ) = delete;
+    ControllerFrame( ControllerFrame&& ) = delete;
+    ControllerFrame& operator=( const ControllerFrame& ) = delete;
+    ControllerFrame& operator=( ControllerFrame&& ) = delete;
 
     void onHoverEnter( wxMouseEvent& event );
     void onHoverLeave( wxMouseEvent& event );
@@ -47,8 +53,10 @@ class ControllerFrame final : public wxPanel
 
     wxImage* m_trainerBgImage{ nullptr };
     wxImage* m_seatImage{ nullptr };
-    wxImage m_rotatedSeatImage{};
+    wxImage m_rotatedSeatImage;
     wxPanel* m_imagePanel{ nullptr };
+
+    std::filesystem::path m_basePath;
 
     wxDECLARE_EVENT_TABLE();
 };

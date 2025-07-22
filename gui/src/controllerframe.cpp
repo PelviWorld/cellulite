@@ -1,6 +1,8 @@
 #include "controllerframe.h"
 
 #include <wx/dcbuffer.h>
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
 
 wxDEFINE_EVENT( EVT_ENABLE_BUTTONS, wxCommandEvent );
 
@@ -83,6 +85,9 @@ wxBEGIN_EVENT_TABLE( ControllerFrame, wxPanel ) EVT_PAINT( ControllerFrame::onPa
   , m_controller( controller )
   , m_timer( this, wxID_ANY )
 {
+  const wxFileName execPath = wxStandardPaths::Get().GetExecutablePath();
+  m_basePath = execPath.GetPath().ToStdString() + "/";
+
   createButtons( idOffset );
   createLayout();
 
@@ -334,8 +339,8 @@ void ControllerFrame::createLayout()
   m_imagePanel->SetBackgroundStyle( wxBG_STYLE_PAINT );
 
   wxImage::AddHandler( new wxPNGHandler );
-  m_trainerBgImage = createImage( m_imagePanel, "Trainer.png", false );
-  m_seatImage = createImage( m_imagePanel, "Seat.png" );
+  m_trainerBgImage = createImage( m_imagePanel, m_basePath.string() + "Trainer.png", false );
+  m_seatImage = createImage( m_imagePanel, m_basePath.string() + "Seat.png" );
   m_rotatedSeatImage = rotateImage( m_seatImage, 0 );
 
   auto* mainSizer = new wxBoxSizer( wxHORIZONTAL );
