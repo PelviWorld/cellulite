@@ -11,8 +11,10 @@ namespace
   constexpr auto kBORDER = 5;
   constexpr auto kPOLLING_INTERVAL = 100;
   constexpr auto kSMALL_SPACER = 10;
-  constexpr auto kBIG_SPACER = 50;
-  constexpr auto kBUTTON_SPACER = 30;
+  constexpr auto kBIG_SPACER = 30;
+  constexpr auto kBUTTON_SPACER = 20;
+  constexpr auto kBUTTON_WIDTH = 110;
+  constexpr auto kBUTTON_HEIGHT = 50;
   const wxPoint kCENTER_SEAT( 243, 235 );
   constexpr auto kHALF_CIRCLE = 180;
   const auto kWHITE_BG = wxColour( 255, 255, 255 );
@@ -73,6 +75,7 @@ namespace
   {
     auto* button = new wxButton( parent, id, label );
     button->SetToolTip( tooltip );
+    button->SetMinSize( { kBUTTON_WIDTH, kBUTTON_HEIGHT } );
     return button;
   }
 
