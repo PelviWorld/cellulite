@@ -20,7 +20,7 @@ class CelluliteApp final : public wxApp
     void readLoop();
 
     CelluliteFrame* m_frame{ nullptr };
-    std::unique_ptr< GyroCom > m_gyroCom;
+    std::shared_ptr< GyroCom > m_gyroCom;
     std::thread readThread;
     std::atomic< bool > running{ true };
     double m_pitch{ 0.0 };

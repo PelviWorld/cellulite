@@ -92,15 +92,11 @@ std::vector< std::string > createControllerMapAndReturnRemainingPorts( Controlle
   }
 }
 
-std::unique_ptr< GyroCom > createGyro( std::vector< std::string >& ports )
+std::shared_ptr< GyroCom > createGyro()
 {
-  for( auto port : ports )
-  {
-    auto gyroCom = std::make_unique< GyroCom >( port );
-    if( gyroCom->verifyConnection() )
-    {
-      return gyroCom;
-    }
-  }
-  return nullptr;
+  const double kPos1Degree = 0;
+  const double kPos2Degree = 45;
+  const double kPos3Degree = 85;
+  auto gyroCom = std::make_shared< GyroCom >( kPos1Degree, kPos2Degree, kPos3Degree );
+  return gyroCom;
 }

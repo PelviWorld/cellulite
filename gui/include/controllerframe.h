@@ -1,6 +1,7 @@
 #pragma once
 
 #include "controller.h"
+#include "gyrocom.h"
 
 #include <filesystem>
 #include <wx/wx.h>
@@ -8,7 +9,7 @@
 class ControllerFrame final : public wxPanel
 {
   public:
-    ControllerFrame( wxWindow* parent, const Controller& controller, int idOffset );
+    ControllerFrame( wxWindow* parent, const Controller& controller, std::shared_ptr< GyroCom > gyro, int idOffset );
     ~ControllerFrame();
 
     ControllerFrame( const ControllerFrame& ) = delete;
@@ -50,6 +51,7 @@ class ControllerFrame final : public wxPanel
     wxTimer m_timer;
 
     Controller m_controller;
+    std::shared_ptr< GyroCom > m_gyro;
 
     wxImage* m_trainerBgImage{ nullptr };
     wxImage* m_seatImage{ nullptr };

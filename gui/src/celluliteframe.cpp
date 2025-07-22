@@ -15,7 +15,7 @@ namespace
 
 wxBEGIN_EVENT_TABLE( CelluliteFrame, wxFrame ) EVT_PAINT( CelluliteFrame::onPaint ) wxEND_EVENT_TABLE()
 
-  CelluliteFrame::CelluliteFrame( const ControllerMap& controllerMap )
+  CelluliteFrame::CelluliteFrame( const ControllerMap& controllerMap, std::shared_ptr< GyroCom > gyro )
   : wxFrame( nullptr, wxID_ANY, kAPP_NAME, wxDefaultPosition, wxSize( kWINDOW_WIDTH, kWINDOW_HEIGHT ),
       wxDEFAULT_FRAME_STYLE & ~( wxRESIZE_BORDER | wxMAXIMIZE_BOX ) )
 {
@@ -30,11 +30,11 @@ wxBEGIN_EVENT_TABLE( CelluliteFrame, wxFrame ) EVT_PAINT( CelluliteFrame::onPain
 
   if( controllerHeight != controllerMap.end() )
   {
-    m_heightFrame = new ControllerFrame( this, controllerHeight->second, kHEIGHT_ID_OFFSET );
+    m_heightFrame = new ControllerFrame( this, controllerHeight->second, gyro, kHEIGHT_ID_OFFSET );
   }
   else
   {
-    m_heightFrame = new ControllerFrame( this, std::make_shared< LaingController >(), kHEIGHT_ID_OFFSET );
+    m_heightFrame = new ControllerFrame( this, std::make_shared< LaingController >(), gyro, kHEIGHT_ID_OFFSET );
   }
 
   auto* sizer = new wxBoxSizer( wxVERTICAL );

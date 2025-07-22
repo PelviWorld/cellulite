@@ -2,6 +2,8 @@
 
 #include "controller.h"
 #include "controllerframe.h"
+#include "gyrocom.h"
+#include <memory>
 #include <wx/wx.h>
 
 enum
@@ -12,7 +14,7 @@ enum
 class CelluliteFrame final : public wxFrame
 {
   public:
-    explicit CelluliteFrame( const ControllerMap& controllerMap );
+    explicit CelluliteFrame( const ControllerMap& controllerMap, std::shared_ptr< GyroCom > gyro );
 
     void createMenuBar();
     void createStatusBar();

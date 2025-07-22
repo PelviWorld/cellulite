@@ -5,8 +5,8 @@ bool CelluliteApp::OnInit()
 {
   ControllerMap controllerMap;
   auto remainingPorts = createControllerMapAndReturnRemainingPorts( controllerMap );
-  m_gyroCom = createGyro( remainingPorts );
-  m_frame = new CelluliteFrame( controllerMap );
+  m_gyroCom = createGyro();
+  m_frame = new CelluliteFrame( controllerMap, m_gyroCom );
 
   m_frame->Show( true );
   SetTopWindow( m_frame );
