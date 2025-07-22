@@ -4,28 +4,62 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    types: [ labeled, opened, synchronize, reopened ]
+    branches: [ "main" ]
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    container:
+      image: debian:12
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+      - name: Install cross compiler and build utils
+        run: |
+          dpkg --add-architecture arm64
+          apt-get update
+          apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu cmake build-essential python3.10 python3-pip pipx libc6-dev-arm64-cross pkg-config
+          apt-get -o Dpkg::Options::="--force-script-chrootless" install -y \
+            libgtk-3-dev \
+            libgtk-3-dev:arm64 \
+            libwxgtk3.2-dev:arm64 \
+            libgtk-3-common \
+            libgtk-3-0:arm64 \
+            libgdk-pixbuf2.0-dev:arm64 \
+            libpango1.0-dev:arm64 \
+            libatk1.0-dev:arm64 \
+            libcairo2-dev:arm64 \
+            libglib2.0-dev:arm64 \
+            libglib2.0-dev-bin \
+            libharfbuzz-dev:arm64 \
+            libfreetype-dev:arm64 \
+            libfontconfig-dev:arm64 \
+            libx11-dev:arm64 \
+            zlib1g-dev:arm64
 
       - name: Set up Conan
-        run: pip3 install conan
+        run: |
+          pipx install conan
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          mkdir "$HOME"/.conan2
+          echo "tools.system.package_manager:mode = install" > "$HOME"/.conan2/global.conf
 
-      - name: Create Conan profile
-        run: conan profile detect
+      - name: Create Conan profile and install dependencies
+        run: |
+          conan profile detect
+          cp raspberry "$HOME"/.conan2/profiles/raspberry
+          export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/share/pkgconfig
+          conan install . --profile:host=raspberry --profile:build=default --build=missing --output-folder=build
 
       - name: Configure CMake
-        run: cmake -S . -B build
+        run: |
+          cmake -DCMAKE_TOOLCHAIN_FILE=cmake/raspberry_toolchain.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -S . -B build
 
       - name: Build
         run: cmake --build build --config Release
@@ -37,4 +71,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: installer
-          path: build/packages/*.exe
+          path: build/packages/*.deb
