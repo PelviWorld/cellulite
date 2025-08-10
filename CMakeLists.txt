@@ -35,7 +35,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_BINARY_DIR}/bin)
 
-add_executable(${PROJECT_NAME} WIN32
+find_package(wxWidgets REQUIRED COMPONENTS core base)
+include(${wxWidgets_USE_FILE})
+
+add_executable(${PROJECT_NAME}
         src/main.cpp
 )
 
@@ -54,7 +57,13 @@ target_link_libraries(${PROJECT_NAME}
         PRIVATE
         laingcontroller::laingcontroller
         gui::gui
+        ${wxWidgets_LIBRARIES}
+        ${GTK3_LIBRARIES}
 )
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${wxWidgets_INCLUDE_DIRS} ${GTK3_INCLUDE_DIRS})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${wxWidgets_DEFINITIONS})
 
 install(
         TARGETS ${PROJECT_NAME}
