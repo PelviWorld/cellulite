@@ -2,6 +2,8 @@
 #include "utility.h"
 
 #include <iostream>
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
 
 int getValue( const INIReader& reader, const std::string& section, const std::string& key )
 {
@@ -70,7 +72,9 @@ std::vector< std::string > createControllerMap(
 
 std::vector< std::string > createController( ControllerMap& controllerMap )
 {
-  const auto reader = getReader( "cellulite.ini" );
+  const wxFileName executablePath( wxStandardPaths::Get().GetExecutablePath() );
+  const auto iniPath = executablePath.GetPath() + "/cellulite.ini";
+  const auto reader = getReader( iniPath.ToStdString() );
   const auto serialConfig = readSerialConfig( reader );
   return createControllerMap( reader, serialConfig, controllerMap );
 }
@@ -88,15 +92,11 @@ std::vector< std::string > createControllerMapAndReturnRemainingPorts( Controlle
   }
 }
 
-std::unique_ptr< GyroCom > createGyro( std::vector< std::string >& ports )
+std::shared_ptr< GyroCom > createGyro()
 {
-  for( auto port : ports )
-  {
-    auto gyroCom = std::make_unique< GyroCom >( port );
-    if( gyroCom->verifyConnection() )
-    {
-      return gyroCom;
-    }
-  }
-  return nullptr;
+  const double kPos1Degree = 0;
+  const double kPos2Degree = 45;
+  const double kPos3Degree = 85;
+  auto gyroCom = std::make_shared< GyroCom >( kPos1Degree, kPos2Degree, kPos3Degree );
+  return gyroCom;
 }

@@ -1,6 +1,9 @@
 #include "controllerframe.h"
 
+#include <memory>
 #include <wx/dcbuffer.h>
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
 
 wxDEFINE_EVENT( EVT_ENABLE_BUTTONS, wxCommandEvent );
 
@@ -9,8 +12,10 @@ namespace
   constexpr auto kBORDER = 5;
   constexpr auto kPOLLING_INTERVAL = 100;
   constexpr auto kSMALL_SPACER = 10;
-  constexpr auto kBIG_SPACER = 50;
-  constexpr auto kBUTTON_SPACER = 30;
+  constexpr auto kBIG_SPACER = 30;
+  constexpr auto kBUTTON_SPACER = 20;
+  constexpr auto kBUTTON_WIDTH = 110;
+  constexpr auto kBUTTON_HEIGHT = 50;
   const wxPoint kCENTER_SEAT( 243, 235 );
   constexpr auto kHALF_CIRCLE = 180;
   const auto kWHITE_BG = wxColour( 255, 255, 255 );
@@ -71,6 +76,7 @@ namespace
   {
     auto* button = new wxButton( parent, id, label );
     button->SetToolTip( tooltip );
+    button->SetMinSize( { kBUTTON_WIDTH, kBUTTON_HEIGHT } );
     return button;
   }
 
@@ -78,11 +84,16 @@ namespace
 
 wxBEGIN_EVENT_TABLE( ControllerFrame, wxPanel ) EVT_PAINT( ControllerFrame::onPaint ) wxEND_EVENT_TABLE()
 
-  ControllerFrame::ControllerFrame( wxWindow* parent, const Controller& controller, const int idOffset )
+  ControllerFrame::ControllerFrame(
+    wxWindow* parent, const Controller& controller, std::shared_ptr< GyroCom > gyro, const int idOffset )
   : wxPanel( parent )
   , m_controller( controller )
+  , m_gyro( gyro )
   , m_timer( this, wxID_ANY )
 {
+  const wxFileName execPath = wxStandardPaths::Get().GetExecutablePath();
+  m_basePath = execPath.GetPath().ToStdString() + "/";
+
   createButtons( idOffset );
   createLayout();
 
@@ -139,21 +150,25 @@ void ControllerFrame::onClicked( wxCommandEvent& event )
   if( id == m_pos1Button->GetId() )
   {
     disableButtons();
+    m_gyro->setPosition( 0 );
     m_controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_1 );
   }
   else if( id == m_pos2Button->GetId() )
   {
     disableButtons();
+    m_gyro->setPosition( 1 );
     m_controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_2 );
   }
   else if( id == m_pos3Button->GetId() )
   {
     disableButtons();
-    m_controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_3 );
+    m_gyro->setPosition( 2 );
+    m_controller->moveToUserPosition( AXIS::ONE, USER_POSITION::POS_4 );
   }
   else if( id == m_referenceButton->GetId() )
   {
     disableButtons();
+    m_gyro->setPosition( 0 );
     m_controller->referenceRun( AXIS::ONE );
   }
   else if( id == m_savePos1Button->GetId() )
@@ -166,7 +181,7 @@ void ControllerFrame::onClicked( wxCommandEvent& event )
   }
   else if( id == m_savePos3Button->GetId() )
   {
-    m_controller->saveUserPosition( AXIS::ONE, USER_POSITION::POS_3 );
+    m_controller->saveUserPosition( AXIS::ONE, USER_POSITION::POS_4 );
   }
 }
 
@@ -334,8 +349,8 @@ void ControllerFrame::createLayout()
   m_imagePanel->SetBackgroundStyle( wxBG_STYLE_PAINT );
 
   wxImage::AddHandler( new wxPNGHandler );
-  m_trainerBgImage = createImage( m_imagePanel, "Trainer.png", false );
-  m_seatImage = createImage( m_imagePanel, "Seat.png" );
+  m_trainerBgImage = createImage( m_imagePanel, m_basePath.string() + "Trainer.png", false );
+  m_seatImage = createImage( m_imagePanel, m_basePath.string() + "Seat.png" );
   m_rotatedSeatImage = rotateImage( m_seatImage, 0 );
 
   auto* mainSizer = new wxBoxSizer( wxHORIZONTAL );

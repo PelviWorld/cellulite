@@ -4,6 +4,7 @@
 from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMakeToolchain
 
+
 class ConanApplication(ConanFile):
     package_type = "application"
     settings = "os", "compiler", "build_type", "arch"
@@ -20,4 +21,4 @@ class ConanApplication(ConanFile):
     def requirements(self):
         requirements = self.conan_data.get('requirements', [])
         for requirement in requirements:
-            self.requires(requirement)
+            self.requires(requirement, force=True)

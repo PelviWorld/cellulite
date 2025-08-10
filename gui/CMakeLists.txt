@@ -1,7 +1,7 @@
 project(gui
         LANGUAGES CXX C
 )
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
@@ -14,8 +14,9 @@ set(SOURCES
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-find_package(wxWidgets REQUIRED COMPONENTS core base)
 find_package(inih REQUIRED)
+find_package(wxWidgets REQUIRED COMPONENTS core base)
+include(${wxWidgets_USE_FILE})
 
 target_link_libraries(${PROJECT_NAME}
         PUBLIC
@@ -31,6 +32,7 @@ target_include_directories(${PROJECT_NAME}
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
+        ${wxWidgets_INCLUDE_DIRS}
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../controller/lainginterface/>
         $<INSTALL_INTERFACE:include>

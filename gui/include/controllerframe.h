@@ -1,14 +1,21 @@
 #pragma once
 
 #include "controller.h"
+#include "gyrocom.h"
 
+#include <filesystem>
 #include <wx/wx.h>
 
 class ControllerFrame final : public wxPanel
 {
   public:
-    ControllerFrame( wxWindow* parent, const Controller& controller, int idOffset );
+    ControllerFrame( wxWindow* parent, const Controller& controller, std::shared_ptr< GyroCom > gyro, int idOffset );
     ~ControllerFrame();
+
+    ControllerFrame( const ControllerFrame& ) = delete;
+    ControllerFrame( ControllerFrame&& ) = delete;
+    ControllerFrame& operator=( const ControllerFrame& ) = delete;
+    ControllerFrame& operator=( ControllerFrame&& ) = delete;
 
     void onHoverEnter( wxMouseEvent& event );
     void onHoverLeave( wxMouseEvent& event );
@@ -44,11 +51,14 @@ class ControllerFrame final : public wxPanel
     wxTimer m_timer;
 
     Controller m_controller;
+    std::shared_ptr< GyroCom > m_gyro;
 
     wxImage* m_trainerBgImage{ nullptr };
     wxImage* m_seatImage{ nullptr };
-    wxImage m_rotatedSeatImage{};
+    wxImage m_rotatedSeatImage;
     wxPanel* m_imagePanel{ nullptr };
+
+    std::filesystem::path m_basePath;
 
     wxDECLARE_EVENT_TABLE();
 };

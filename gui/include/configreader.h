@@ -9,4 +9,4 @@ INIReader getReader( const std::string& filename );
 std::unordered_map< ControllerAxis, int > readSerialConfig( const INIReader& reader );
 std::vector< std::string > createController( ControllerMap& controllerMap );
 std::vector< std::string > createControllerMapAndReturnRemainingPorts( ControllerMap& controllerMap );
-std::unique_ptr< GyroCom > createGyro( std::vector< std::string >& ports );
+std::shared_ptr< GyroCom > createGyro();

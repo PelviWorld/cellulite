@@ -3,5 +3,5 @@
 
 requirements:
   - "libmodbus/3.1.10"
-  - "wxwidgets/3.2.6"
+  - "libjpeg/9f"
   - "inih/58"
